@@ -1,0 +1,23 @@
+{
+    "name": "tv2regionerne/statamic-curated-collections",
+    "autoload": {
+        "psr-4": {
+            "Tv2regionerne\\StatamicCuratedCollection\\": "src"
+        }
+    },
+    "extra": {
+        "statamic": {
+            "name": "Statamic Curated Collection",
+            "description": "Statamic Curated Collection addon"
+        },
+        "laravel": {
+            "providers": [
+                "Tv2regionerne\\StatamicCuratedCollection\\ServiceProvider"
+            ]
+        }
+    },
+    "require": {
+        "php": "^8.2",
+        "spatie/eloquent-sortable": "^4.0"
+    }
+}
