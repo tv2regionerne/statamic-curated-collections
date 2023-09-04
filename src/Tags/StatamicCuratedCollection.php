@@ -48,7 +48,8 @@ class StatamicCuratedCollection extends Tags
             }
 
             $ids[] = $e->id();
-            $e->set('curated_collections', $entry->toArray());
+            $e->set('curated_collection_data', $entry->processedData());
+            $e->set('curated_collection_order', $entry->order_column);
             $e->set('curated_collection_source', 'list');
             $entries[] = $e;
         });
