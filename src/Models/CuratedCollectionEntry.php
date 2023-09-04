@@ -73,6 +73,15 @@ class CuratedCollectionEntry extends Model
         return $this;
     }
 
+    /**
+     * Proccess the data with the blueprint and return
+     *
+     * @return array
+     */
+    public function processedData() {
+        return $this->data;
+    }
+
     public function publishOrder($publishOrder = null) {
         if (!$publishOrder) {
             return $this->publish_order;

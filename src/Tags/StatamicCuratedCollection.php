@@ -21,21 +21,24 @@ class StatamicCuratedCollection extends Tags
     public function wildcard($tag)
     {
 
-        $curatedCollection = CuratedCollectionFacade::findByHandle($tag);
+        $curatedCollection = CuratedCollection::where('handle', $tag)->first();
+        if (!$curatedCollection) {
+            return null;
+        }
 
         $fallback = $this->params->get('fallback', false);
         $limit = $this->params->get('limit', 10);
 
         $entries = [];
         $ids = [];
-        $query = CuratedCollectionEntryFacade::query()
-            ->where('curated_collection', $tag)
-            ->orderBy('order', 'asc')
-            ->published()
+        $query = CuratedCollectionEntry::query()
+            ->where('curated_collection_id', $curatedCollection->id)
+            ->where('status', 'published')
+            ->ordered()
             ->limit($limit);
 
-        $query->get()->each(function($entry) use (&$entries, &$ids) {
-            $e = Entry::find($entry->entry);
+        $query->get()->each(function(CuratedCollectionEntry $entry) use (&$entries, &$ids) {
+            $e = $entry->entry();
             if (!$e) {
                 return;
             }
@@ -45,11 +48,9 @@ class StatamicCuratedCollection extends Tags
             }
 
             $ids[] = $e->id();
-            $entries[] = [
-                'entry' => $e,
-                'order' => $entry->order(),
-                'type' => 'curated'
-            ];
+            $e->set('curated_collections', $entry->toArray());
+            $e->set('curated_collection_source', 'list');
+            $entries[] = $e;
         });
 
         if ($fallback && count($entries) < $limit) {
@@ -60,10 +61,8 @@ class StatamicCuratedCollection extends Tags
                 ->orderBy($curatedCollection->fallback_sort_field, $curatedCollection->fallback_sort_direction)
                 ->get();
             $fallbackEntries->transform(function ($e) {
-                return [
-                    'entry' => $e,
-                    'type' => 'fallback'
-                ];
+                $e->set('curated_collection_source', 'fallback');
+                return $e;
             });
             $entries = array_merge($entries, $fallbackEntries->all());
         }
