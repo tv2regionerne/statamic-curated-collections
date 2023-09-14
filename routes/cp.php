@@ -10,7 +10,7 @@ use \Tv2regionerne\StatamicCuratedCollection\Http\Controllers\CP\ApiEntryRelatio
 Route::get('/curated-collections/api/collections/{curatedCollection:handle}/entries', [ApiEntriesController::class, 'index'])->name('curated-collections.api.entries.index');
 Route::post('/curated-collections/api/collections/{curatedCollection:handle}/entries', [ApiEntriesController::class, 'store'])->name('curated-collections.api.entries.store');
 Route::post('/curated-collections/api/collections/{curatedCollection:handle}/entries/reorder', [ApiEntriesController::class, 'reorder'])->name('curated-collections.api.entries.reorder');
-Route::get('/curated-collections/api/collections/{curatedCollection:handle}/entries/create', [ApiEntriesController::class, 'create'])->name('curated-collections.api.entries.edit');
+Route::get('/curated-collections/api/collections/{curatedCollection:handle}/entries/create', [ApiEntriesController::class, 'create'])->name('curated-collections.api.entries.create');
 Route::get('/curated-collections/api/collections/{curatedCollection:handle}/entries/{curatedCollectionEntry}', [ApiEntriesController::class, 'edit'])->name('curated-collections.api.entries.edit');
 Route::patch('/curated-collections/api/collections/{curatedCollection:handle}/entries/{curatedCollectionEntry}', [ApiEntriesController::class, 'update'])->name('curated-collections.api.entries.update');
 Route::delete('/curated-collections/api/collections/{curatedCollection:handle}/entries/{curatedCollectionEntry}', [ApiEntriesController::class, 'destroy'])->name('curated-collections.api.entries.destroy');
