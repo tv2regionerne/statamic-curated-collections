@@ -79,7 +79,8 @@ class CuratedCollectionEntry extends Model
      * @return array
      */
     public function processedData() {
-        return $this->data;
+        $blueprint = $this->curatedCollection->blueprint();
+        return $blueprint->fields()->addValues((array) $this->data)->augment()->values();
     }
 
     public function publishOrder($publishOrder = null) {

@@ -5,8 +5,6 @@ namespace Tv2regionerne\StatamicCuratedCollection\Tags;
 use Statamic\Facades\Entry;
 use Statamic\Tags\Tags;
 use Tv2regionerne\StatamicCuratedCollection\Models\CuratedCollection;
-use Tv2regionerne\StatamicCuratedCollection\Facades\CuratedCollection as CuratedCollectionFacade;
-use Tv2regionerne\StatamicCuratedCollection\Facades\CuratedCollectionEntry as CuratedCollectionEntryFacade;
 use Tv2regionerne\StatamicCuratedCollection\Models\CuratedCollectionEntry;
 
 class StatamicCuratedCollection extends Tags
@@ -30,12 +28,15 @@ class StatamicCuratedCollection extends Tags
         $limit = $this->params->get('limit', 10);
 
         $entries = [];
-        $ids = [];
         $query = CuratedCollectionEntry::query()
             ->where('curated_collection_id', $curatedCollection->id)
             ->where('status', 'published')
             ->ordered()
             ->limit($limit);
+
+        if ($ids = $this->deduplicateApply()) {
+            $query->whereNotIn('id', $ids);
+        }
 
         $query->get()->each(function(CuratedCollectionEntry $entry) use (&$entries, &$ids) {
             $e = $entry->entry();
@@ -68,6 +69,36 @@ class StatamicCuratedCollection extends Tags
             $entries = array_merge($entries, $fallbackEntries->all());
         }
 
+        if ($as = $this->params->get('as')) {
+            return [$as => $entries];
+        }
+
+        $this->deduplicateUpdate($entries);
+
         return $entries;
+    }
+
+    protected function deduplicateApply()
+    {
+        if (!$this->params->get('deduplicate', false)) {
+            return;
+        }
+
+        return app('deduplicate')->fetch();
+    }
+
+    protected function deduplicateUpdate($entries)
+    {
+        if (!$this->params->get('deduplicate', false)) {
+            return;
+        }
+
+        if ($as = $this->params->get('as')) {
+            $entries = $entries[$as];
+        }
+
+        $ids = $entries->pluck('id')->all();
+
+        app('deduplicate')->merge($ids);
     }
 }
