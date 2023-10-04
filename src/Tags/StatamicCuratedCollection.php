@@ -6,6 +6,7 @@ use Statamic\Facades\Entry;
 use Statamic\Tags\Tags;
 use Tv2regionerne\StatamicCuratedCollection\Models\CuratedCollection;
 use Tv2regionerne\StatamicCuratedCollection\Models\CuratedCollectionEntry;
+use Tv2regionerne\StatamicFastly\Events\CuratedCollectionTagEvent;
 
 class StatamicCuratedCollection extends Tags
 {
@@ -74,6 +75,8 @@ class StatamicCuratedCollection extends Tags
         }
 
         $this->deduplicateUpdate($entries);
+
+        CuratedCollectionTagEvent::dispatch($this);
 
         return $entries;
     }
