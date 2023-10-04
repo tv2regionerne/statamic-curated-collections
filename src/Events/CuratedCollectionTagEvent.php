@@ -1,6 +1,6 @@
 <?php
 
-namespace Tv2regionerne\StatamicFastly\Events;
+namespace Tv2regionerne\StatamicCuratedCollection\Events;
 
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;

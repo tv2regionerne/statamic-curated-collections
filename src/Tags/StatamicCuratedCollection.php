@@ -6,7 +6,7 @@ use Statamic\Facades\Entry;
 use Statamic\Tags\Tags;
 use Tv2regionerne\StatamicCuratedCollection\Models\CuratedCollection;
 use Tv2regionerne\StatamicCuratedCollection\Models\CuratedCollectionEntry;
-use Tv2regionerne\StatamicFastly\Events\CuratedCollectionTagEvent;
+use Tv2regionerne\StatamicCuratedCollection\Events\CuratedCollectionTagEvent;
 
 class StatamicCuratedCollection extends Tags
 {
