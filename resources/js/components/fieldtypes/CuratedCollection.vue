@@ -55,7 +55,7 @@ export default {
         },
         
         entrySaved() {           
-            return this.store.values.id !== null;
+            return this.store.values.id;
         },
         
         entryPublished() {           
