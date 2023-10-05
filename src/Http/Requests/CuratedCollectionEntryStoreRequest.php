@@ -45,7 +45,7 @@ class CuratedCollectionEntryStoreRequest extends FormRequest
         // validations for draft entries
         $draftvalidations = [
             'publish_order' => [
-                'sometimes',
+                'nullable',
                 'integer',
                 'min:1'
             ],
@@ -59,7 +59,7 @@ class CuratedCollectionEntryStoreRequest extends FormRequest
         // validations for published entries
         $publishedValidations = [
             'order' => [
-                'sometimes',
+                'nullable',
                 'integer',
                 'min:1',
             ],
