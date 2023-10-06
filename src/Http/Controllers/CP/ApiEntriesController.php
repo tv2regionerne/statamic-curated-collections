@@ -51,9 +51,10 @@ class ApiEntriesController
         /** @var \Statamic\Fields\Blueprint $blueprint */
         $blueprint = $curatedCollection->addEntryBlueprint();
         $fields = $blueprint->fields()->addValues($request->all());
-        $data = $fields->validate();
+        $fields->validate();
+        $data = $fields->process()->values()->all();
 
-        $entryId = $data['entry'][0];
+        $entryId = $request->entry[0];
 
         /** @var \Statamic\Entries\Entry $entry */
         $entry = Entry::find($entryId);
@@ -141,7 +142,8 @@ class ApiEntriesController
         /** @var \Statamic\Fields\Blueprint $blueprint */
         $blueprint = $curatedCollection->addEntryBlueprint();
         $fields = $blueprint->fields()->addValues($inputData);
-        $data = $fields->validate();
+        $fields->validate();
+        $data = $fields->process()->values()->all();
 
         $curatedCollectionEntry->data(collect($data)->except(['curated_collection', 'entry', 'order', 'unpublish_at']));
 
