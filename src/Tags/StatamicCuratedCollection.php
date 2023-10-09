@@ -36,7 +36,7 @@ class StatamicCuratedCollection extends Tags
             ->limit($limit);
 
         if ($ids = $this->deduplicateApply()) {
-            $query->whereNotIn('id', $ids);
+            $query->whereNotIn('entry_id', $ids);
         }
 
         $query->get()->each(function(CuratedCollectionEntry $entry) use (&$entries, &$ids) {
@@ -100,7 +100,7 @@ class StatamicCuratedCollection extends Tags
             $entries = $entries[$as];
         }
 
-        $ids = $entries->pluck('id')->all();
+        $ids = collect($entries)->pluck('id')->all();
 
         app('deduplicate')->merge($ids);
     }
