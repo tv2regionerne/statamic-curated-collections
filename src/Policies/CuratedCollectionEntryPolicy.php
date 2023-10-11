@@ -46,7 +46,7 @@ class CuratedCollectionEntryPolicy
     {
         $user = \Statamic\Facades\User::fromUser($user);
 
-        if ( $user->hasPermission("view all curated-collection entries") || $user->hasPermission("view curated-collection {$curatedCollectionEntry->id} entries")) {
+        if ( $user->hasPermission("view all curated-collection entries") || $user->hasPermission("view curated-collection {$curatedCollectionEntry->handle} entries")) {
             return true;
         }
         return false;
@@ -62,7 +62,7 @@ class CuratedCollectionEntryPolicy
     {
         $user = \Statamic\Facades\User::fromUser($user);
 
-        if ( $user->hasPermission("create all curated-collections entries") || $user->hasPermission("create curated-collection {$curatedCollectionEntry->id} entries")) {
+        if ( $user->hasPermission("create all curated-collections entries") || $user->hasPermission("create curated-collection {$curatedCollectionEntry->handle} entries")) {
             return true;
         }
         return false;
@@ -79,7 +79,7 @@ class CuratedCollectionEntryPolicy
     {
         $user = \Statamic\Facades\User::fromUser($user);
 
-        if ( $user->hasPermission("edit all curated-collections entries") || $user->hasPermission("edit curated-collection {$curatedCollectionEntry->id} entries")) {
+        if ( $user->hasPermission("edit all curated-collections entries") || $user->hasPermission("edit curated-collection {$curatedCollectionEntry->handle} entries")) {
             return true;
         }
         return false;
@@ -102,37 +102,4 @@ class CuratedCollectionEntryPolicy
         return false;
     }
 
-    /**
-     * Determine whether the user can restore the model.
-     *
-     * @param  $user
-     * @param  CuratedCollectionEntry  $curatedCollectionEntry
-     * @return \Illuminate\Auth\Access\Response|bool
-     */
-    public function restore($user, CuratedCollectionEntry $curatedCollectionEntry)
-    {
-        $user = \Statamic\Facades\User::fromUser($user);
-
-        if ( $user->hasPermission("edit curated-collections")) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     *
-     * @param  $user
-     * @param  CuratedCollectionEntry  $curatedCollectionEntry
-     * @return \Illuminate\Auth\Access\Response|bool
-     */
-    public function forceDelete($user, CuratedCollectionEntry $curatedCollectionEntry)
-    {
-        $user = \Statamic\Facades\User::fromUser($user);
-
-        if ( $user->hasPermission("edit curated-collections")) {
-            return true;
-        }
-        return false;
-    }
 }

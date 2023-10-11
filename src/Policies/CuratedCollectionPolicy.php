@@ -45,7 +45,7 @@ class CuratedCollectionPolicy
     {
         $user = \Statamic\Facades\User::fromUser($user);
 
-        if ( $user->hasPermission("view curated-collection {$curatedCollection->id} entries")) {
+        if ( $user->hasPermission("view curated-collection {$curatedCollection->handle} entries")) {
             return true;
         }
         return false;

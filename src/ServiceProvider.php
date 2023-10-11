@@ -61,7 +61,7 @@ class ServiceProvider extends AddonServiceProvider
             $children = [];
             foreach (CuratedCollection::query()->orderBy('title')->get() as $list) {
                 $children[] = $nav->item($list->title)
-                    ->can("view curated-collection {$list->id} entries", $list)
+                    ->can("view curated-collection {$list->handle} entries", $list)
                     ->route('curated-collections.show', $list->handle);
             }
 
@@ -106,12 +106,12 @@ class ServiceProvider extends AddonServiceProvider
                     $permission
                         ->label("View {$collection->title} entries")
                         ->children([
-                            Permission::make("edit curated-collection {$collection->id} entries")
+                            Permission::make("edit curated-collection {$collection->handle} entries")
                                 ->label("Edit {$collection->title} entries")
                                 ->children([
-                                Permission::make("create curated-collection {$collection->id} entries")
+                                Permission::make("create curated-collection {$collection->handle} entries")
                                     ->label("Create {$collection->title} entries"),
-                                Permission::make("delete curated-collection {$collection->id} entries")
+                                Permission::make("delete curated-collection {$collection->handle} entries")
                                     ->label("Delete {$collection->title} entries"),
                             ])
                         ]);
