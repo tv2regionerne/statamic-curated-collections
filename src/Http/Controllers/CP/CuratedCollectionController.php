@@ -14,7 +14,7 @@ class CuratedCollectionController extends CpController
 
     public function index()
     {
-        $this->authorize('index', CuratedCollection::class, __('You are not authorized to view curated collections.'));
+        $this->authorize('viewAny', CuratedCollection::class, __('You are not authorized to view curated collections.'));
 
         $curatedCollections = CuratedCollection::all()->filter(function ($curatedCollection) {
             return User::current()->can('view', $curatedCollection);
@@ -26,8 +26,8 @@ class CuratedCollectionController extends CpController
                 'edit_url' => $curatedCollection->editUrl(),
                 'delete_url' => $curatedCollection->deleteUrl(),
                 'blueprints_url' => $curatedCollection->blueprintUrl(),
-                'editable' => User::current()->can('edit', $curatedCollection),
-                'blueprint_editable' => User::current()->can('edit blueprint', $curatedCollection),
+                'editable' => User::current()->can('update', $curatedCollection),
+                'blueprint_editable' => User::current()->can('update', $curatedCollection),
                 'deleteable' => User::current()->can('delete', $curatedCollection),
             ];
         })->values();
@@ -39,7 +39,7 @@ class CuratedCollectionController extends CpController
     {
         $curatedCollection = CuratedCollection::findByHandle($curatedCollection);
 
-        $this->authorize('edit', $curatedCollection, __('You are not authorized to configure navs.'));
+        $this->authorize('update', $curatedCollection, __('You are not authorized to configure curated collections.'));
 
         $values = [
             'title' => $curatedCollection->title,
@@ -123,7 +123,7 @@ class CuratedCollectionController extends CpController
 
     public function store(Request $request)
     {
-        $this->authorize('store', CuratedCollection::class, __('You are not authorized to create curated collections.'));
+        $this->authorize('create', CuratedCollection::class, __('You are not authorized to create curated collections.'));
 
         $values = $request->validate([
             'title' => 'required',

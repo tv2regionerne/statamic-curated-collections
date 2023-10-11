@@ -12,17 +12,13 @@ class CuratedCollectionBlueprintController extends CpController
 
     use ManagesBlueprints;
 
-    public function __construct(Request $request)
-    {
-        $this->middleware(\Illuminate\Auth\Middleware\Authorize::class.':configure fields');
-        parent::__construct($request);
-    }
-
     public function edit($curatedCollection)
     {
         if (! $curatedCollection = CuratedCollection::findByHandle($curatedCollection)) {
             return $this->pageNotFound();
         }
+
+        $this->authorize('update', $curatedCollection, __('You are not authorized to configure curated collections.'));
 
         $blueprint = $curatedCollection->blueprint();
 
@@ -38,6 +34,8 @@ class CuratedCollectionBlueprintController extends CpController
         if (! $curatedCollection = CuratedCollection::findByHandle($curatedCollection)) {
             return $this->pageNotFound();
         }
+
+        $this->authorize('update', $curatedCollection, __('You are not authorized to configure curated collections.'));
 
         $request->validate(['tabs' => 'array']);
 

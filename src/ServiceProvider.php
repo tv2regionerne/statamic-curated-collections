@@ -60,7 +60,9 @@ class ServiceProvider extends AddonServiceProvider
 
             $children = [];
             foreach (CuratedCollection::query()->orderBy('title')->get() as $list) {
-                $children[] = $nav->item($list->title)->route('curated-collections.show', $list->handle);
+                $children[] = $nav->item($list->title)
+                    ->can("view curated-collection {$list->id} entries", $list)
+                    ->route('curated-collections.show', $list->handle);
             }
 
             $nav->content(__('statamic-curated-collections::messages.title_plural'))
@@ -75,15 +77,46 @@ class ServiceProvider extends AddonServiceProvider
     {
 
         Permission::group('curated-collections', 'Curated Collections', function () {
-            Permission::register("access curated-collections", function ($permission) {
-                return $permission
-                    ->label('Access Bazo Import')
-                    ->description("Grants access to Bazo Import");
+            Permission::register("manage curated-collections", function ($permission) {
+                $permission
+                    ->label('Administrate Curated Collections')
+                    ->description("Grants access to administrate Curated Collections settings and blueprints");
             });
-            Permission::register("edit bazo import settings", function ($permission) {
-                return $permission
-                    ->label('Edit Bazo Import settings')
-                    ->description("Grants access to Bazo Import settings");
+//            Permission::register("view all curated-collection entries", function ($permission) {
+//                $permission
+//                    ->label('View all entries')
+//                    ->description("Grants access to view all entries")
+//                ->children([
+//                    Permission::make("edit all curated-collections entries", function ($permission) {
+//                        $permission
+//                            ->label('Edit all entries')
+//                            ->description("Grants access to edit all entries");
+//                    })->label("Edit all Curated Collections"),
+//                    Permission::make("delete all curated-collections entries", function ($permission) {
+//                        $permission
+//                            ->label('Delete entries')
+//                            ->description("Grants access to delete entries in all collections");
+//                    })->label("Delete in all Curated Collections"),
+//
+//                ]);
+//            });
+
+            CuratedCollection::all()->each(function ($collection) {
+                Permission::register("view curated-collection {$collection->id} entries", function ($permission) use (&$collection) {
+                    $permission
+                        ->label("View {$collection->title} entries")
+                        ->children([
+                            Permission::make("edit curated-collection {$collection->id} entries")
+                                ->label("Edit {$collection->title} entries")
+                                ->children([
+                                Permission::make("create curated-collection {$collection->id} entries")
+                                    ->label("Create {$collection->title} entries"),
+                                Permission::make("delete curated-collection {$collection->id} entries")
+                                    ->label("Delete {$collection->title} entries"),
+                            ])
+                        ]);
+                });
+
             });
         });
     }

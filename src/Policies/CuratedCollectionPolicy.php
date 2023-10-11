@@ -10,85 +10,80 @@ class CuratedCollectionPolicy
 {
     use HandlesAuthorization;
 
+    public function before($user, $ability)
+    {
+        $user = \Statamic\Facades\User::fromUser($user);
+
+        if ($user->hasPermission('manage curated-collections')) {
+            return true;
+        }
+    }
+
     /**
      * Determine whether the user can view any models.
      *
-     * @param  \App\Models\User  $user
+     * @param  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function viewAny(User $user)
+    public function viewAny($user)
     {
-        //
+        $user = \Statamic\Facades\User::fromUser($user);
+
+        return ! CuratedCollection::all()->filter(function ($curatedCollection) use ($user) {
+            return $this->view($user, $curatedCollection);
+        })->isEmpty();
     }
 
     /**
      * Determine whether the user can view the model.
      *
-     * @param  \App\Models\User  $user
+     * @param  $user
      * @param  CuratedCollection  $curatedCollection
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, CuratedCollection $curatedCollection)
+    public function view($user, CuratedCollection $curatedCollection)
     {
-        //
+        $user = \Statamic\Facades\User::fromUser($user);
+
+        if ( $user->hasPermission("view curated-collection {$curatedCollection->id} entries")) {
+            return true;
+        }
+        return false;
     }
 
     /**
      * Determine whether the user can create models.
      *
-     * @param  \App\Models\User  $user
+     * @param  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function create(User $user)
+    public function create($user)
     {
-        //
+        // handled by before()
     }
 
     /**
      * Determine whether the user can update the model.
      *
-     * @param  \App\Models\User  $user
+     * @param  $user
      * @param  CuratedCollection  $curatedCollection
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, CuratedCollection $curatedCollection)
+    public function update($user, CuratedCollection $curatedCollection)
     {
-        //
+        // handled by before()
     }
 
     /**
      * Determine whether the user can delete the model.
      *
-     * @param  \App\Models\User  $user
+     * @param  $user
      * @param  CuratedCollection  $curatedCollection
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, CuratedCollection $curatedCollection)
+    public function delete($user, CuratedCollection $curatedCollection)
     {
-        //
+        // handled by before()
     }
 
-    /**
-     * Determine whether the user can restore the model.
-     *
-     * @param  \App\Models\User  $user
-     * @param  CuratedCollection  $curatedCollection
-     * @return \Illuminate\Auth\Access\Response|bool
-     */
-    public function restore(User $user, CuratedCollection $curatedCollection)
-    {
-        //
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     *
-     * @param  \App\Models\User  $user
-     * @param  CuratedCollection  $curatedCollection
-     * @return \Illuminate\Auth\Access\Response|bool
-     */
-    public function forceDelete(User $user, CuratedCollection $curatedCollection)
-    {
-        //
-    }
 }

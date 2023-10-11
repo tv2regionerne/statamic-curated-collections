@@ -14,7 +14,7 @@ class CuratedCollectionEntriesController extends CpController
 
     public function index()
     {
-        $this->authorize('index', CuratedCollection::class, __('You are not authorized to view curated collections.'));
+        $this->authorize('viewAny', CuratedCollection::class, __('You are not authorized to view curated collections.'));
 
         $curatedCollections = CuratedCollection::all()->filter(function ($curatedCollection) {
             return User::current()->can('view', $curatedCollection);

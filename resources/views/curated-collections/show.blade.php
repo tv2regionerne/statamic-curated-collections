@@ -17,10 +17,8 @@
             :display-form-computed='@json($curatedCollection->display_form_computed)'
         >
             <template #twirldown>
-                @can('edit', $curatedCollection)
+                @can('update', $curatedCollection)
                     <dropdown-item :text="__('Edit Curated Collection')" redirect="{{ $curatedCollection->editUrl() }}"></dropdown-item>
-                @endcan
-                @can('configure fields')
                     <dropdown-item :text="__('Edit Blueprint')" redirect="{{ cp_route('curated-collections.blueprint.edit', $curatedCollection->handle) }}"></dropdown-item>
                 @endcan
                 @can('delete', $curatedCollection)
