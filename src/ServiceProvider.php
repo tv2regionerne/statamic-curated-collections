@@ -82,27 +82,9 @@ class ServiceProvider extends AddonServiceProvider
                     ->label('Administrate Curated Collections')
                     ->description("Grants access to administrate Curated Collections settings and blueprints");
             });
-//            Permission::register("view all curated-collection entries", function ($permission) {
-//                $permission
-//                    ->label('View all entries')
-//                    ->description("Grants access to view all entries")
-//                ->children([
-//                    Permission::make("edit all curated-collections entries", function ($permission) {
-//                        $permission
-//                            ->label('Edit all entries')
-//                            ->description("Grants access to edit all entries");
-//                    })->label("Edit all Curated Collections"),
-//                    Permission::make("delete all curated-collections entries", function ($permission) {
-//                        $permission
-//                            ->label('Delete entries')
-//                            ->description("Grants access to delete entries in all collections");
-//                    })->label("Delete in all Curated Collections"),
-//
-//                ]);
-//            });
 
             CuratedCollection::all()->each(function ($collection) {
-                Permission::register("view curated-collection {$collection->id} entries", function ($permission) use (&$collection) {
+                Permission::register("view curated-collection {$collection->handle} entries", function ($permission) use (&$collection) {
                     $permission
                         ->label("View {$collection->title} entries")
                         ->children([
