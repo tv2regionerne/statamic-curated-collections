@@ -45,6 +45,7 @@ class ApiEntriesController
     {
         $ids = $request->input('ids');
         CuratedCollectionEntry::setNewOrder($ids);
+        CuratedCollectionUpdatedEvent::dispatch($curatedCollection->handle);
     }
 
     public function store(CuratedCollectionEntryStoreRequest $request, CuratedCollection $curatedCollection)
