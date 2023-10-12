@@ -7,6 +7,8 @@ use Statamic\Facades\Blueprint;
 use Statamic\Facades\Site;
 use Statamic\Facades\User;
 use Statamic\Http\Controllers\CP\CpController;
+use Tv2regionerne\StatamicCuratedCollection\Events\CuratedCollectionTagEvent;
+use Tv2regionerne\StatamicCuratedCollection\Events\CuratedCollectionUpdatedEvent;
 use Tv2regionerne\StatamicCuratedCollection\Models\CuratedCollection;
 
 class CuratedCollectionEntriesController extends CpController
@@ -99,6 +101,8 @@ class CuratedCollectionEntriesController extends CpController
         $curatedCollection->fill($values);
         $curatedCollection->save();
 
+        CuratedCollectionUpdatedEvent::dispatch($curatedCollection->handle);
+
         return [
             'title' => $curatedCollection->title,
         ];
@@ -113,12 +117,14 @@ class CuratedCollectionEntriesController extends CpController
             'handle' => 'required|alpha_dash',
         ]);
 
-        $structure = new CuratedCollection();
-        $structure->fill($values);
-        $structure->site = Site::selected()->handle();
-        $structure->save();
+        $curatedCollection = new CuratedCollection();
+        $curatedCollection->fill($values);
+        $curatedCollection->site = Site::selected()->handle();
+        $curatedCollection->save();
 
-        return ['redirect' => $structure->showUrl()];
+        CuratedCollectionUpdatedEvent::dispatch($curatedCollection->handle);
+
+        return ['redirect' => $curatedCollection->showUrl()];
     }
 
     public function editFormBlueprint($curatedCollection)
@@ -181,6 +187,7 @@ class CuratedCollectionEntriesController extends CpController
         $this->authorize('delete', $curatedCollection, __('You are not authorized to delete curated collections.'));
 
         $curatedCollection->delete();
+        CuratedCollectionUpdatedEvent::dispatch($curatedCollection->handle);
     }
 
 }

@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Statamic\Facades\Entry;
+use Tv2regionerne\StatamicCuratedCollection\Events\CuratedCollectionUpdatedEvent;
 use Tv2regionerne\StatamicCuratedCollection\Http\Requests\CuratedCollectionEntryIndexRequest;
 use Tv2regionerne\StatamicCuratedCollection\Http\Requests\CuratedCollectionEntryReorderRequest;
 use Tv2regionerne\StatamicCuratedCollection\Http\Requests\CuratedCollectionEntryStoreRequest;
@@ -102,6 +103,7 @@ class ApiEntriesController
         }
 
         $curatedCollectionEntry->save();
+        CuratedCollectionUpdatedEvent::dispatch($curatedCollection->handle);
 
         // set custom order
         if ($entry->published() && $data['order']) {
@@ -122,6 +124,8 @@ class ApiEntriesController
         $curatedCollectionEntry->curatedCollection()->associate($curatedCollection);
         $curatedCollectionEntry->entry($entry);
         $curatedCollectionEntry->collection($entry->collection()->handle());
+
+        CuratedCollectionUpdatedEvent::dispatch($curatedCollection->handle);
 
         return (new CuratedCollectionEntryEditResource($curatedCollectionEntry))
             ->blueprint($curatedCollection->addEntryBlueprint());
@@ -170,6 +174,8 @@ class ApiEntriesController
 
         $curatedCollectionEntry->save();
 
+        CuratedCollectionUpdatedEvent::dispatch($curatedCollection->handle);
+
         return new CuratedCollectionEntryResource($curatedCollectionEntry);
     }
 
@@ -179,6 +185,7 @@ class ApiEntriesController
 
         // Update the order indexes after deleting an entry
         $curatedCollectionEntry->curatedCollection->reorderEntries();
+        CuratedCollectionUpdatedEvent::dispatch($curatedCollection->handle);
 
         return response()->json(['success' => true]);
     }

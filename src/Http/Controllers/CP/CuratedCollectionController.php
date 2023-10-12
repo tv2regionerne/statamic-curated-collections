@@ -7,6 +7,7 @@ use Statamic\Facades\Blueprint;
 use Statamic\Facades\Site;
 use Statamic\Facades\User;
 use Statamic\Http\Controllers\CP\CpController;
+use Tv2regionerne\StatamicCuratedCollection\Events\CuratedCollectionUpdatedEvent;
 use Tv2regionerne\StatamicCuratedCollection\Models\CuratedCollection;
 
 class CuratedCollectionController extends CpController
@@ -115,6 +116,7 @@ class CuratedCollectionController extends CpController
 
         $curatedCollection->fill($values);
         $curatedCollection->save();
+        CuratedCollectionUpdatedEvent::dispatch($curatedCollection->handle);
 
         return [
             'title' => $curatedCollection->title,
@@ -134,6 +136,7 @@ class CuratedCollectionController extends CpController
         $curatedCollection->fill($values);
         $curatedCollection->site = Site::selected()->handle();
         $curatedCollection->save();
+        CuratedCollectionUpdatedEvent::dispatch($curatedCollection->handle);
 
         return ['redirect' => $curatedCollection->showUrl()];
     }
@@ -260,6 +263,7 @@ class CuratedCollectionController extends CpController
         $this->authorize('delete', $curatedCollection, __('You are not authorized to delete curated collections.'));
 
         $curatedCollection->delete();
+        CuratedCollectionUpdatedEvent::dispatch($curatedCollection->handle);
     }
 
 }
