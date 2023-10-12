@@ -59,11 +59,13 @@ class ServiceProvider extends AddonServiceProvider
         Nav::extend(function ($nav) {
 
             $children = [];
-            foreach (CuratedCollection::query()->orderBy('title')->get() as $list) {
-                $children[] = $nav->item($list->title)
-                    ->can("view curated-collection {$list->handle} entries", $list)
-                    ->route('curated-collections.show', $list->handle);
-            }
+            rescue(function() use (&$nav, &$children) {
+                foreach (CuratedCollection::query()->orderBy('title')->get() as $list) {
+                    $children[] = $nav->item($list->title)
+                        ->can("view curated-collection {$list->handle} entries", $list)
+                        ->route('curated-collections.show', $list->handle);
+                }
+            });
 
             $nav->content(__('statamic-curated-collections::messages.title_plural'))
                 ->section('Content')
@@ -83,23 +85,26 @@ class ServiceProvider extends AddonServiceProvider
                     ->description("Grants access to administrate Curated Collections settings and blueprints");
             });
 
-            CuratedCollection::all()->each(function ($collection) {
-                Permission::register("view curated-collection {$collection->handle} entries", function ($permission) use (&$collection) {
-                    $permission
-                        ->label("View {$collection->title} entries")
-                        ->children([
-                            Permission::make("edit curated-collection {$collection->handle} entries")
-                                ->label("Edit {$collection->title} entries")
-                                ->children([
-                                Permission::make("create curated-collection {$collection->handle} entries")
-                                    ->label("Create {$collection->title} entries"),
-                                Permission::make("delete curated-collection {$collection->handle} entries")
-                                    ->label("Delete {$collection->title} entries"),
-                            ])
-                        ]);
+            // rescue to prevent issue when migrations has not been run
+            rescue(function() {
+                CuratedCollection::all()->each(function ($collection) {
+                    Permission::register("view curated-collection {$collection->handle} entries", function ($permission) use (&$collection) {
+                        $permission
+                            ->label("View {$collection->title} entries")
+                            ->children([
+                                Permission::make("edit curated-collection {$collection->handle} entries")
+                                    ->label("Edit {$collection->title} entries")
+                                    ->children([
+                                        Permission::make("create curated-collection {$collection->handle} entries")
+                                            ->label("Create {$collection->title} entries"),
+                                        Permission::make("delete curated-collection {$collection->handle} entries")
+                                            ->label("Delete {$collection->title} entries"),
+                                    ])
+                            ]);
+                    });
                 });
-
             });
+
         });
     }
 }
