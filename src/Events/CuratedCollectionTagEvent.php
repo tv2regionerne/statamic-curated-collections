@@ -11,13 +11,13 @@ class CuratedCollectionTagEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $tag;
+    public string $tag;
 
     /**
      * Create a new event instance.
      */
-    public function __construct($tag)
+    public function __construct(string $tag)
     {
-        $this->tag = $tag;
+        $this->tag = strtolower($tag);
     }
 }

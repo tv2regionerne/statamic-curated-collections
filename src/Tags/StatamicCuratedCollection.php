@@ -76,7 +76,7 @@ class StatamicCuratedCollection extends Tags
 
         $this->deduplicateUpdate($entries);
 
-        CuratedCollectionTagEvent::dispatch($this);
+        CuratedCollectionTagEvent::dispatch($tag);
 
         return $entries;
     }
