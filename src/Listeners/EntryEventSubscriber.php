@@ -2,11 +2,10 @@
 
 namespace Tv2regionerne\StatamicCuratedCollection\Listeners;
 
-use Statamic\Events\CollectionDeleted;
-use Statamic\Events\CollectionSaved;
 use Statamic\Events\EntryCreated;
 use Statamic\Events\EntryDeleted;
 use Statamic\Events\EntrySaved;
+use Tv2regionerne\StatamicCuratedCollection\Events\CuratedCollectionUpdatedEvent;
 use Tv2regionerne\StatamicCuratedCollection\Models\CuratedCollectionEntry;
 
 class EntryEventSubscriber
@@ -21,17 +20,18 @@ class EntryEventSubscriber
     {
         $curatedColletionEntries = CuratedCollectionEntry::where('entry_id', $event->entry->id())->get();
 
-        $curatedColletionsToReorder = [];
+        $curatedCollectionsToReorder = [];
 
         // delete all curatedColletionEntries related to the deleted entry
-        $curatedColletionEntries->each(function($curatedColletionEntry) use (&$curatedColletionsToReorder) {
+        $curatedColletionEntries->each(function($curatedColletionEntry) use (&$curatedCollectionsToReorder) {
             $curatedColletionEntry->delete();
-            $curatedColletionsToReorder[$curatedColletionEntry->curatedCollection->id] = $curatedColletionEntry->curatedCollection;
+            $curatedCollectionsToReorder[$curatedColletionEntry->curatedCollection->id] = $curatedColletionEntry->curatedCollection;
         });
 
         // reorder the collection entries where entries have been deleted
-        foreach ($curatedColletionsToReorder as $curatedColletion) {
-            $curatedColletion->reorderEntries();
+        foreach ($curatedCollectionsToReorder as $curatedCollection) {
+            $curatedCollection->reorderEntries();
+            CuratedCollectionUpdatedEvent::dispatch($curatedCollection->handle);
         }
 
     }
@@ -54,16 +54,17 @@ class EntryEventSubscriber
                 ->where('entry_id', $event->entry->id())
                 ->get();
 
-            $curatedColletionsToReorder = [];
+            $curatedCollectionsToReorder = [];
 
-            $curatedColletionEntries->each(function(CuratedCollectionEntry $curatedColletionEntry) use (&$curatedColletionsToReorder) {
-                $curatedColletionEntry->delete();
-                $curatedColletionsToReorder[$curatedColletionEntry->curatedCollection->id] = $curatedColletionEntry->curatedCollection;
+            $curatedColletionEntries->each(function(CuratedCollectionEntry $curatedCollectionEntry) use (&$curatedCollectionsToReorder) {
+                $curatedCollectionEntry->delete();
+                $curatedCollectionsToReorder[$curatedCollectionEntry->curatedCollection->id] = $curatedCollectionEntry->curatedCollection;
             });
 
             // reorder the collection entries where entries have been deleted
-            foreach ($curatedColletionsToReorder as $curatedColletion) {
-                $curatedColletion->reorderEntries();
+            foreach ($curatedCollectionsToReorder as $curatedCollection) {
+                $curatedCollection->reorderEntries();
+                CuratedCollectionUpdatedEvent::dispatch($curatedCollection->handle);
             }
         }
     }
@@ -71,8 +72,6 @@ class EntryEventSubscriber
     public function subscribe($events)
     {
         return [
-            //CollectionDeleted::class => 'handleCollectionDeleted',
-            //CollectionSaved::class => 'handleCollectionSaved',
             EntryDeleted::class => 'handleEntryDeleted',
             EntryCreated::class => 'handleEntryCreated',
             EntrySaved::class => 'handleEntrySaved',
