@@ -2,42 +2,75 @@
 
 namespace Tv2regionerne\StatamicCuratedCollection\Fieldtypes;
 
-use Illuminate\Support\Collection;
-use Statamic\Entries\Entry;
-use Statamic\Fields\Fieldtype;
-use Tv2regionerne\StatamicCuratedCollection\Models\CuratedCollectionEntry;
+use Statamic\CP\Column;
+use Statamic\Fieldtypes\Relationship;
+use Statamic\Support\Arr;
 
-class CuratedCollection extends Fieldtype
+class CuratedCollection extends Relationship
 {
-    /**
-     * The blank/default value.
-     *
-     * @return array
-     */
-    public function defaultValue()
+
+    protected $canCreate = false;
+
+    protected static $title = 'Curated Collections';
+
+    protected $icon = 'addons';
+
+    public function getIndexItems($request)
     {
-        return null;
+        return \Tv2regionerne\StatamicCuratedCollection\Models\CuratedCollection::all()
+            ->map(function ($collection) {
+                return [
+                    'id' => $collection->id,
+                    'title' => $collection->title,
+                ];
+            })
+            ->values();
     }
 
-    /**
-     * Pre-process the data before it gets sent to the publish page.
-     *
-     * @param mixed $data
-     * @return array|mixed
-     */
-    public function preProcess($data)
+    protected function getColumns()
     {
-        return $data;
+        return [
+            Column::make('title')
+                ->label(__('Title')),
+        ];
     }
 
-    /**
-     * Process the data before it gets saved.
-     *
-     * @param mixed $data
-     * @return array|mixed
-     */
-    public function process($data)
+    public function toItemArray($id)
     {
-        return $data;
+        $collection = \Tv2regionerne\StatamicCuratedCollection\Models\CuratedCollection::find($id);
+
+        if (! $collection) {
+            return $this->invalidItemArray($id);
+        }
+
+        return [
+            'id' => $collection->id,
+            'title' => $collection->title,
+        ];
+    }
+
+    public function preProcessIndex($data)
+    {
+        if (! $data) {
+            return;
+        }
+
+        return \Tv2regionerne\StatamicCuratedCollection\Models\CuratedCollection::query()
+            ->whereIn('id', Arr::wrap($data))
+            ->get()
+            ->map(function ($collection) {
+                return [
+                    'id' => $collection->id(),
+                    'title' => $collection->title(),
+                ];
+            })
+            ->values();
+    }
+
+    public function augment($value)
+    {
+        $query = \Tv2regionerne\StatamicCuratedCollection\Models\CuratedCollection::query()->whereIn('id', Arr::wrap($value));
+
+        return $this->config('max_items') === 1 ? $query->first() : $query;
     }
 }
