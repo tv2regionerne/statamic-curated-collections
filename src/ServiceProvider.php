@@ -2,20 +2,23 @@
 
 namespace Tv2regionerne\StatamicCuratedCollection;
 
+use Illuminate\Support\Facades\Route;
 use Statamic\Facades\Permission;
 use Statamic\Providers\AddonServiceProvider;
 use Statamic\Facades\CP\Nav;
 use Tv2regionerne\StatamicCuratedCollection\Commands\RunAutomation;
 use Tv2regionerne\StatamicCuratedCollection\Listeners\EntryEventSubscriber;
+use Tv2regionerne\StatamicCuratedCollection\Http\Controllers\Api\CuratedCollectionController;
+use Tv2regionerne\StatamicCuratedCollection\Http\Controllers\Api\CuratedCollectionEntriesController;
 use Tv2regionerne\StatamicCuratedCollection\Models\CuratedCollection;
 use Tv2regionerne\StatamicCuratedCollection\Models\CuratedCollectionEntry;
 use Tv2regionerne\StatamicCuratedCollection\Policies\CuratedCollectionEntryPolicy;
 use Tv2regionerne\StatamicCuratedCollection\Policies\CuratedCollectionPolicy;
 use Tv2regionerne\StatamicCuratedCollection\Filters\ActiveStatus;
+use Tv2regionerne\StatamicPrivateApi\Facades\PrivateApi;
 
 class ServiceProvider extends AddonServiceProvider
 {
-
     protected $routes = [
         'cp' => __DIR__ . '/../routes/cp.php',
     ];
@@ -50,7 +53,10 @@ class ServiceProvider extends AddonServiceProvider
     public function boot()
     {
         parent::boot();
+            
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+        
+        $this->bootApi();
     }
     public function bootAddon()
     {
@@ -75,9 +81,8 @@ class ServiceProvider extends AddonServiceProvider
         });
     }
 
-    protected function bootPermissions(): void
+    protected function bootPermissions(): self
     {
-
         Permission::group('curated-collections', 'Curated Collections', function () {
             Permission::register("manage curated-collections", function ($permission) {
                 $permission
@@ -106,5 +111,36 @@ class ServiceProvider extends AddonServiceProvider
             });
 
         });
+        
+        return $this;
+    }
+    
+    private function bootApi(): self
+    {
+        if (class_exists(PrivateApi::class)) {
+            PrivateApi::addRoute(function () {
+                Route::prefix('/statamic-curated-collections')
+                    ->group(function () {
+                        Route::get('/', [CuratedCollectionController::class, 'index']);
+                        Route::post('/', [CuratedCollectionController::class, 'store']);
+                        
+                        Route::prefix('/{id}')
+                            ->group(function () {                        
+                                Route::get('/', [CuratedCollectionController::class, 'show']);
+                                Route::patch('/', [CuratedCollectionController::class, 'update']);
+                                Route::delete('/', [CuratedCollectionController::class, 'destroy']);
+                                
+                                Route::prefix('/entries')
+                                    ->group(function () {                        
+                                        Route::get('/', [CuratedCollectionEntriesController::class, 'index']);  
+                                        Route::post('reorder', [CuratedCollectionEntriesController::class, 'reorder']);  
+                                    });                              
+                                
+                            });
+                    });
+            });
+        }
+
+        return $this;
     }
 }

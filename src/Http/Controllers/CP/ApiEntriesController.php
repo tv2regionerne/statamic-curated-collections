@@ -2,9 +2,7 @@
 
 namespace Tv2regionerne\StatamicCuratedCollection\Http\Controllers\CP;
 
-use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
 use Statamic\Facades\Entry;
 use Tv2regionerne\StatamicCuratedCollection\Events\CuratedCollectionUpdatedEvent;
 use Tv2regionerne\StatamicCuratedCollection\Http\Requests\CuratedCollectionEntryIndexRequest;
@@ -20,7 +18,6 @@ use Tv2regionerne\StatamicCuratedCollection\Models\CuratedCollectionEntry;
 
 class ApiEntriesController
 {
-
     public function index(CuratedCollectionEntryIndexRequest $request, CuratedCollection $curatedCollection)
     {
         $query = CuratedCollectionEntry::query()
