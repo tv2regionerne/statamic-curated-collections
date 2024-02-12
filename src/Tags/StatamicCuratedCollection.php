@@ -60,7 +60,7 @@ class StatamicCuratedCollection extends Tags
             $fallbackEntries = Entry::query()
                 ->where('collection', $curatedCollection->fallback_collection)
                 ->where('status', 'published')
-                ->whereNotIn('id', $ids)
+                ->whereNotIn('id', $ids ?? [])
                 ->limit($limit - count($entries))
                 ->orderBy($curatedCollection->fallback_sort_field, $curatedCollection->fallback_sort_direction)
                 ->get();
