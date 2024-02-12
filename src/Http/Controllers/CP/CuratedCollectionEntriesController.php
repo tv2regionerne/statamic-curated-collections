@@ -7,13 +7,11 @@ use Statamic\Facades\Blueprint;
 use Statamic\Facades\Site;
 use Statamic\Facades\User;
 use Statamic\Http\Controllers\CP\CpController;
-use Tv2regionerne\StatamicCuratedCollection\Events\CuratedCollectionTagEvent;
 use Tv2regionerne\StatamicCuratedCollection\Events\CuratedCollectionUpdatedEvent;
 use Tv2regionerne\StatamicCuratedCollection\Models\CuratedCollection;
 
 class CuratedCollectionEntriesController extends CpController
 {
-
     public function index()
     {
         $this->authorize('viewAny', CuratedCollection::class, __('You are not authorized to view curated collections.'));
@@ -189,5 +187,4 @@ class CuratedCollectionEntriesController extends CpController
         $curatedCollection->delete();
         CuratedCollectionUpdatedEvent::dispatch($curatedCollection->handle);
     }
-
 }

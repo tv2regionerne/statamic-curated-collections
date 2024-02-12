@@ -4,9 +4,9 @@ namespace Tv2regionerne\StatamicCuratedCollection\Tags;
 
 use Statamic\Facades\Entry;
 use Statamic\Tags\Tags;
+use Tv2regionerne\StatamicCuratedCollection\Events\CuratedCollectionTagEvent;
 use Tv2regionerne\StatamicCuratedCollection\Models\CuratedCollection;
 use Tv2regionerne\StatamicCuratedCollection\Models\CuratedCollectionEntry;
-use Tv2regionerne\StatamicCuratedCollection\Events\CuratedCollectionTagEvent;
 
 class StatamicCuratedCollection extends Tags
 {
@@ -21,7 +21,7 @@ class StatamicCuratedCollection extends Tags
     {
 
         $curatedCollection = CuratedCollection::where('handle', $tag)->first();
-        if (!$curatedCollection) {
+        if (! $curatedCollection) {
             return null;
         }
 
@@ -39,9 +39,9 @@ class StatamicCuratedCollection extends Tags
             $query->whereNotIn('entry_id', $ids);
         }
 
-        $query->get()->each(function(CuratedCollectionEntry $entry) use (&$entries, &$ids) {
+        $query->get()->each(function (CuratedCollectionEntry $entry) use (&$entries, &$ids) {
             $e = $entry->entry();
-            if (!$e) {
+            if (! $e) {
                 return;
             }
 
@@ -66,6 +66,7 @@ class StatamicCuratedCollection extends Tags
                 ->get();
             $fallbackEntries->transform(function ($e) {
                 $e->set('curated_collection_source', 'fallback');
+
                 return $e;
             });
             $entries = array_merge($entries, $fallbackEntries->all());
@@ -84,7 +85,7 @@ class StatamicCuratedCollection extends Tags
 
     protected function deduplicateApply()
     {
-        if (!$this->params->get('deduplicate', false)) {
+        if (! $this->params->get('deduplicate', false)) {
             return;
         }
 
@@ -93,7 +94,7 @@ class StatamicCuratedCollection extends Tags
 
     protected function deduplicateUpdate($entries)
     {
-        if (!$this->params->get('deduplicate', false)) {
+        if (! $this->params->get('deduplicate', false)) {
             return;
         }
 

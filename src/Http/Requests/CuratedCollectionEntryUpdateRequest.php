@@ -3,7 +3,6 @@
 namespace Tv2regionerne\StatamicCuratedCollection\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class CuratedCollectionEntryUpdateRequest extends FormRequest
@@ -31,13 +30,13 @@ class CuratedCollectionEntryUpdateRequest extends FormRequest
             'publish_order' => [
                 'nullable',
                 'integer',
-                'min:1'
+                'min:1',
             ],
             'expiration_time' => [
                 'nullable',
                 'integer',
-                'min:1'
-            ]
+                'min:1',
+            ],
         ];
 
         // validations for published entries
@@ -53,7 +52,7 @@ class CuratedCollectionEntryUpdateRequest extends FormRequest
         $entry = $curatedCollectionEntry->entry();
 
         // no resolution. Basic validation will handle this
-        if (!$entry) {
+        if (! $entry) {
             throw ValidationException::withMessages(['entry' => 'The entry cant be resolved']);
         }
 

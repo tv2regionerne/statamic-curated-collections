@@ -3,8 +3,6 @@
 namespace Tv2regionerne\StatamicCuratedCollection\Http\Resources;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
-use Statamic\CP\Column;
-use Statamic\CP\Columns;
 
 class CuratedCollectionEntryCollection extends ResourceCollection
 {
@@ -16,7 +14,7 @@ class CuratedCollectionEntryCollection extends ResourceCollection
 
         return $this;
     }
-    
+
     public function with($request)
     {
         return [
@@ -25,7 +23,7 @@ class CuratedCollectionEntryCollection extends ResourceCollection
             ],
         ];
     }
-    
+
     protected function columns()
     {
         return $this->blueprint->columns();

@@ -5,8 +5,6 @@ namespace Tv2regionerne\StatamicCuratedCollection\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Statamic\Facades\Entry;
-use Tv2regionerne\StatamicCuratedCollection\Models\CuratedCollection;
-use Tv2regionerne\StatamicCuratedCollection\Models\CuratedCollectionEntry;
 
 class CuratedCollectionEntryStoreRequest extends FormRequest
 {
@@ -33,7 +31,7 @@ class CuratedCollectionEntryStoreRequest extends FormRequest
         $basicValidation = [
             'curated_collection' => [
                 'required',
-                Rule::exists('curated_collections', 'handle')
+                Rule::exists('curated_collections', 'handle'),
             ],
             'entry.0' => [
                 'required',
@@ -47,13 +45,13 @@ class CuratedCollectionEntryStoreRequest extends FormRequest
             'publish_order' => [
                 'nullable',
                 'integer',
-                'min:1'
+                'min:1',
             ],
             'expiration_time' => [
                 'sometimes',
                 'integer',
-                'min:1'
-            ]
+                'min:1',
+            ],
         ];
 
         // validations for published entries
@@ -69,7 +67,7 @@ class CuratedCollectionEntryStoreRequest extends FormRequest
         $entry = Entry::find($this->input('entry.0'));
 
         // no resolution. Basic validation will handle this
-        if (!$entry) {
+        if (! $entry) {
             return $basicValidation;
         }
 

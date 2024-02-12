@@ -9,7 +9,6 @@ use Tv2regionerne\StatamicCuratedCollection\Models\CuratedCollection;
 
 class CuratedCollectionBlueprintController extends CpController
 {
-
     use ManagesBlueprints;
 
     public function edit($curatedCollection)
@@ -41,5 +40,4 @@ class CuratedCollectionBlueprintController extends CpController
 
         $this->updateBlueprint($request, $curatedCollection->blueprint());
     }
-
 }

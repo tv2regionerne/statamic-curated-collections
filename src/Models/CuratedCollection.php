@@ -9,7 +9,6 @@ use Statamic\Facades\Blueprint;
 
 class CuratedCollection extends Model
 {
-
     use HasUuids;
 
     protected $appends = ['display_form_computed'];
@@ -45,8 +44,7 @@ class CuratedCollection extends Model
     public function addEntryBlueprint()
     {
         $blueprint = $this->blueprint();
-        if (!$blueprint->hasField('entry'))
-        {
+        if (! $blueprint->hasField('entry')) {
             $blueprint->ensureField('id', [
                 'visibility' => 'hidden',
                 'type' => 'text',
@@ -68,7 +66,7 @@ class CuratedCollection extends Model
                 'width' => 50,
                 'validate' => [
                     'nullable',
-                ]
+                ],
             ], null, true);
             $blueprint->ensureField('published', [
                 'visibility' => 'hidden',
@@ -114,7 +112,7 @@ class CuratedCollection extends Model
                 'create' => false,
                 'validate' => [
                     'required',
-                ]
+                ],
             ], null, true);
 
         }
@@ -137,7 +135,8 @@ class CuratedCollection extends Model
         return self::query()->where('handle', $handle)->first();
     }
 
-    public function reorderEntries() {
+    public function reorderEntries()
+    {
         // Get id's of published entries
         $ids = $this
             ->entries()
@@ -157,6 +156,7 @@ class CuratedCollection extends Model
         $requiredFields = $blueprint->fields()->all()
             ->except(['entry', 'order'])
             ->where(fn ($field) => $field->isRequired());
+
         return $requiredFields->count() || $this->display_form;
     }
 
