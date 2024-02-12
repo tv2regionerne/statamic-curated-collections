@@ -41,35 +41,43 @@ class CuratedCollectionEntry extends Model
         return $this->belongsTo(CuratedCollection::class);
     }
 
-    public function entry($entry = null) {
-        if (!$entry) {
+    public function entry($entry = null)
+    {
+        if (! $entry) {
             return Entry::find($this->entry_id);
         }
         $this->entry_id = $entry->id();
+
         return $this;
     }
 
-    public function collection($collection = null) {
-        if (!$collection) {
+    public function collection($collection = null)
+    {
+        if (! $collection) {
             return $this->collection;
         }
         $this->collection = $collection;
+
         return $this;
     }
 
-    public function status($status = null) {
-        if (!$status) {
+    public function status($status = null)
+    {
+        if (! $status) {
             return $this->status;
         }
         $this->status = $status;
+
         return $this;
     }
 
-    public function data($data = null) {
-        if (!$data) {
+    public function data($data = null)
+    {
+        if (! $data) {
             return $this->data;
         }
         $this->data = $data;
+
         return $this;
     }
 
@@ -78,37 +86,46 @@ class CuratedCollectionEntry extends Model
      *
      * @return array
      */
-    public function processedData() {
+    public function processedData()
+    {
         $blueprint = $this->curatedCollection->blueprint();
+
         return $blueprint->fields()->addValues(json_decode(json_encode($this->data), true))->augment()->values();
     }
 
-    public function publishOrder($publishOrder = null) {
-        if (!$publishOrder) {
+    public function publishOrder($publishOrder = null)
+    {
+        if (! $publishOrder) {
             return $this->publish_order;
         }
         $this->publish_order = $publishOrder;
+
         return $this;
     }
 
-    public function expirationTime($expirationTime = null) {
-        if (!$expirationTime) {
+    public function expirationTime($expirationTime = null)
+    {
+        if (! $expirationTime) {
             return $this->expiration_time;
         }
         $this->expiration_time = $expirationTime;
+
         return $this;
     }
 
-    public function unpublishAt($unpublishAt = null) {
-        if (!$unpublishAt) {
+    public function unpublishAt($unpublishAt = null)
+    {
+        if (! $unpublishAt) {
             return $this->unpublish_at;
         }
         // Handle the statamic date/time array
         if (is_array($unpublishAt)) {
-            $this->unpublish_at = Carbon::make($unpublishAt['date'] .' '. $unpublishAt['time']);
+            $this->unpublish_at = Carbon::make($unpublishAt['date'].' '.$unpublishAt['time']);
+
             return $this;
         }
         $this->unpublish_at = $unpublishAt;
+
         return $this;
     }
 
@@ -122,10 +139,12 @@ class CuratedCollectionEntry extends Model
         }
 
         $this->update($update);
+
         return $this;
     }
 
-    public function setPosition(?int $position = null) {
+    public function setPosition(?int $position = null)
+    {
         // Get id's of published entries
         $ids = $this
             ->buildSortQuery()
@@ -144,11 +163,13 @@ class CuratedCollectionEntry extends Model
         CuratedCollectionEntry::setNewOrder($order);
     }
 
-    public function scopePublished(Builder $query): void {
+    public function scopePublished(Builder $query): void
+    {
         $query->where('status', 'published');
     }
 
-    public function scopeDraft(Builder $query): void {
+    public function scopeDraft(Builder $query): void
+    {
         $query->where('status', 'draft');
     }
 

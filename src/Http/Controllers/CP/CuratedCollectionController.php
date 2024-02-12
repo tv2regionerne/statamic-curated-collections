@@ -12,8 +12,7 @@ use Tv2regionerne\StatamicCuratedCollection\Models\CuratedCollection;
 
 class CuratedCollectionController extends CpController
 {
-
-    public function index()
+    public function index(Request $request)
     {
         $this->authorize('viewAny', CuratedCollection::class, __('You are not authorized to view curated collections.'));
 
@@ -32,6 +31,10 @@ class CuratedCollectionController extends CpController
                 'deleteable' => User::current()->can('delete', $curatedCollection),
             ];
         })->values();
+
+        if (request()->wantsJson()) {
+            return $curatedCollections;
+        }
 
         return view('statamic-curated-collections::curated-collections.index', compact('curatedCollections'));
     }
@@ -75,7 +78,7 @@ class CuratedCollectionController extends CpController
 
         $this->authorize('view', $curatedCollection, __('You are not authorized to view navs.'));
 
-        if (!$curatedCollection->collections) {
+        if (! $curatedCollection->collections) {
             redirect(cp_route('curated-collections.edit', $curatedCollection->handle))
                 ->with('error', __('statamic-curated-collections::configure.collections_instructions'))
                 ->send();
@@ -88,6 +91,10 @@ class CuratedCollectionController extends CpController
         $defaults = $fields->all()->map(function ($field) {
             return $field->fieldtype()->preProcess($field->defaultValue());
         });
+
+        if (request()->wantsJson()) {
+            return $curatedCollection;
+        }
 
         return view('statamic-curated-collections::curated-collections.show', [
             'curatedCollection' => $curatedCollection,
@@ -173,7 +180,7 @@ class CuratedCollectionController extends CpController
                         'mode' => 'select',
                         'validate' => [
                             'required',
-                            'min:1'
+                            'min:1',
                         ],
                     ],
                     'display_form' => [
@@ -263,7 +270,7 @@ class CuratedCollectionController extends CpController
         $this->authorize('delete', $curatedCollection, __('You are not authorized to delete curated collections.'));
 
         $curatedCollection->delete();
+
         CuratedCollectionUpdatedEvent::dispatch($curatedCollection->handle);
     }
-
 }

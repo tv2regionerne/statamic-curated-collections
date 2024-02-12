@@ -2,26 +2,31 @@
 
 namespace Tv2regionerne\StatamicCuratedCollection;
 
+use Illuminate\Support\Facades\Route;
+use Statamic\Facades\CP\Nav;
 use Statamic\Facades\Permission;
 use Statamic\Providers\AddonServiceProvider;
-use Statamic\Facades\CP\Nav;
 use Tv2regionerne\StatamicCuratedCollection\Commands\RunAutomation;
+use Tv2regionerne\StatamicCuratedCollection\Filters\ActiveStatus;
+use Tv2regionerne\StatamicCuratedCollection\Http\Controllers\Api\CuratedCollectionController;
+use Tv2regionerne\StatamicCuratedCollection\Http\Controllers\Api\CuratedCollectionEntriesController;
 use Tv2regionerne\StatamicCuratedCollection\Listeners\EntryEventSubscriber;
 use Tv2regionerne\StatamicCuratedCollection\Models\CuratedCollection;
 use Tv2regionerne\StatamicCuratedCollection\Models\CuratedCollectionEntry;
 use Tv2regionerne\StatamicCuratedCollection\Policies\CuratedCollectionEntryPolicy;
 use Tv2regionerne\StatamicCuratedCollection\Policies\CuratedCollectionPolicy;
-use Tv2regionerne\StatamicCuratedCollection\Filters\ActiveStatus;
+use Tv2regionerne\StatamicPrivateApi\Facades\PrivateApi;
 
 class ServiceProvider extends AddonServiceProvider
 {
-
     protected $routes = [
-        'cp' => __DIR__ . '/../routes/cp.php',
+        'cp' => __DIR__.'/../routes/cp.php',
     ];
+
     protected $tags = [
         Tags\StatamicCuratedCollection::class,
     ];
+
     protected $fieldtypes = [
         Fieldtypes\CuratedCollection::class,
     ];
@@ -31,7 +36,7 @@ class ServiceProvider extends AddonServiceProvider
     ];
 
     protected $vite = [
-        'resources/js/curated-collections-addon.js'
+        'resources/js/curated-collections-addon.js',
     ];
 
     protected $subscribe = [
@@ -50,8 +55,12 @@ class ServiceProvider extends AddonServiceProvider
     public function boot()
     {
         parent::boot();
+
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+
+        $this->bootApi();
     }
+
     public function bootAddon()
     {
         $this->bootPermissions();
@@ -59,7 +68,7 @@ class ServiceProvider extends AddonServiceProvider
         Nav::extend(function ($nav) {
 
             $children = [];
-            rescue(function() use (&$nav, &$children) {
+            rescue(function () use (&$nav, &$children) {
                 foreach (CuratedCollection::query()->orderBy('title')->get() as $list) {
                     $children[] = $nav->item($list->title)
                         ->can("view curated-collection {$list->handle} entries", $list)
@@ -75,18 +84,17 @@ class ServiceProvider extends AddonServiceProvider
         });
     }
 
-    protected function bootPermissions(): void
+    protected function bootPermissions(): self
     {
-
         Permission::group('curated-collections', 'Curated Collections', function () {
-            Permission::register("manage curated-collections", function ($permission) {
+            Permission::register('manage curated-collections', function ($permission) {
                 $permission
                     ->label('Administrate Curated Collections')
-                    ->description("Grants access to administrate Curated Collections settings and blueprints");
+                    ->description('Grants access to administrate Curated Collections settings and blueprints');
             });
 
             // rescue to prevent issue when migrations has not been run
-            rescue(function() {
+            rescue(function () {
                 CuratedCollection::all()->each(function ($collection) {
                     Permission::register("view curated-collection {$collection->handle} entries", function ($permission) use (&$collection) {
                         $permission
@@ -99,12 +107,43 @@ class ServiceProvider extends AddonServiceProvider
                                             ->label("Create {$collection->title} entries"),
                                         Permission::make("delete curated-collection {$collection->handle} entries")
                                             ->label("Delete {$collection->title} entries"),
-                                    ])
+                                    ]),
                             ]);
                     });
                 });
             });
 
         });
+
+        return $this;
+    }
+
+    private function bootApi(): self
+    {
+        if (class_exists(PrivateApi::class)) {
+            PrivateApi::addRoute(function () {
+                Route::prefix('/statamic-curated-collections')
+                    ->group(function () {
+                        Route::get('/', [CuratedCollectionController::class, 'index']);
+                        Route::post('/', [CuratedCollectionController::class, 'store']);
+
+                        Route::prefix('/{id}')
+                            ->group(function () {
+                                Route::get('/', [CuratedCollectionController::class, 'show']);
+                                Route::patch('/', [CuratedCollectionController::class, 'update']);
+                                Route::delete('/', [CuratedCollectionController::class, 'destroy']);
+
+                                Route::prefix('/entries')
+                                    ->group(function () {
+                                        Route::get('/', [CuratedCollectionEntriesController::class, 'index']);
+                                        Route::post('reorder', [CuratedCollectionEntriesController::class, 'reorder']);
+                                    });
+
+                            });
+                    });
+            });
+        }
+
+        return $this;
     }
 }

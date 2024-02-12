@@ -3,9 +3,6 @@
 namespace Tv2regionerne\StatamicCuratedCollection\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
-use Statamic\Entries\Collection;
-use Statamic\Facades\Entry;
-use Statamic\Http\Resources\API\EntryResource;
 
 class CuratedCollectionEntryEditResource extends JsonResource
 {

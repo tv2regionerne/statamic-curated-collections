@@ -24,13 +24,13 @@ class CuratedCollectionEntryReorderRequest extends FormRequest
     {
         return [
             'ids' => [
-                'array'
+                'array',
             ],
             'ids.*' => [
                 Rule::exists('curated_collection_entries', 'id')
                     ->where('curated_collection_id', $this->curatedCollection->id)
-                    ->where('status', 'published')
-            ]
+                    ->where('status', 'published'),
+            ],
         ];
     }
 }

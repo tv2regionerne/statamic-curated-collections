@@ -10,7 +10,6 @@ use Tv2regionerne\StatamicCuratedCollection\Models\CuratedCollectionEntry;
 
 class EntryEventSubscriber
 {
-
     public function handleEntryCreated(EntryCreated $event)
     {
         // Don't do anything
@@ -23,7 +22,7 @@ class EntryEventSubscriber
         $curatedCollectionsToReorder = [];
 
         // delete all curatedColletionEntries related to the deleted entry
-        $curatedColletionEntries->each(function($curatedColletionEntry) use (&$curatedCollectionsToReorder) {
+        $curatedColletionEntries->each(function ($curatedColletionEntry) use (&$curatedCollectionsToReorder) {
             $curatedColletionEntry->delete();
             $curatedCollectionsToReorder[$curatedColletionEntry->curatedCollection->id] = $curatedColletionEntry->curatedCollection;
         });
@@ -36,7 +35,8 @@ class EntryEventSubscriber
 
     }
 
-    public function handleEntrySaved(EntrySaved $event) {
+    public function handleEntrySaved(EntrySaved $event)
+    {
         $entry = $event->entry;
         if ($entry->status() === 'published') {
             // Publish all curated collection entries
@@ -44,7 +44,7 @@ class EntryEventSubscriber
                 ->where('entry_id', $event->entry->id())
                 ->get();
 
-            $curatedColletionEntries->each(function($entry) {
+            $curatedColletionEntries->each(function ($entry) {
                 $entry->publish();
             });
 
@@ -56,7 +56,7 @@ class EntryEventSubscriber
 
             $curatedCollectionsToReorder = [];
 
-            $curatedColletionEntries->each(function(CuratedCollectionEntry $curatedCollectionEntry) use (&$curatedCollectionsToReorder) {
+            $curatedColletionEntries->each(function (CuratedCollectionEntry $curatedCollectionEntry) use (&$curatedCollectionsToReorder) {
                 $curatedCollectionEntry->delete();
                 $curatedCollectionsToReorder[$curatedCollectionEntry->curatedCollection->id] = $curatedCollectionEntry->curatedCollection;
             });

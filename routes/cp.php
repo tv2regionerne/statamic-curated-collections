@@ -1,11 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use \Tv2regionerne\StatamicCuratedCollection\Http\Controllers\CP\CuratedCollectionController;
-use \Tv2regionerne\StatamicCuratedCollection\Http\Controllers\CP\CuratedCollectionBlueprintController;
-use \Tv2regionerne\StatamicCuratedCollection\Http\Controllers\CP\CuratedCollectionEntriesController;
-use \Tv2regionerne\StatamicCuratedCollection\Http\Controllers\CP\ApiEntriesController;
-use \Tv2regionerne\StatamicCuratedCollection\Http\Controllers\CP\ApiEntryRelationController;
+use Tv2regionerne\StatamicCuratedCollection\Http\Controllers\CP\ApiEntriesController;
+use Tv2regionerne\StatamicCuratedCollection\Http\Controllers\CP\ApiEntryRelationController;
+use Tv2regionerne\StatamicCuratedCollection\Http\Controllers\CP\CuratedCollectionBlueprintController;
+use Tv2regionerne\StatamicCuratedCollection\Http\Controllers\CP\CuratedCollectionController;
+use Tv2regionerne\StatamicCuratedCollection\Http\Controllers\CP\CuratedCollectionEntriesController;
 
 Route::get('/curated-collections/api/collections/{curatedCollection:handle}/entries', [ApiEntriesController::class, 'index'])->name('curated-collections.api.entries.index');
 Route::post('/curated-collections/api/collections/{curatedCollection:handle}/entries', [ApiEntriesController::class, 'store'])->name('curated-collections.api.entries.store');

@@ -8,7 +8,6 @@ use Statamic\Support\Arr;
 
 class CuratedCollection extends Relationship
 {
-
     protected $canCreate = false;
 
     protected static $title = 'Curated Collections';
