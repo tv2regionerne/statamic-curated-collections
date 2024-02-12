@@ -59,8 +59,8 @@ class CuratedCollection extends Relationship
             ->get()
             ->map(function ($collection) {
                 return [
-                    'id' => $collection->id(),
-                    'title' => $collection->title(),
+                    'id' => $collection->id,
+                    'title' => $collection->title,
                 ];
             })
             ->values();
