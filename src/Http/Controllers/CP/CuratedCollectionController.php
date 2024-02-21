@@ -189,13 +189,6 @@ class CuratedCollectionController extends CpController
                         'type' => 'toggle',
                         'default' => true,
                     ],
-                    'max_entries' => [
-                        'display' => __('Max Entries'),
-                        'instructions' => __('statamic-curated-collections::configure.max_entries_instructions'),
-                        'type' => 'integer',
-                        'validate' => 'min:0',
-                    ],
-
                 ],
             ],
             'automation' => [
