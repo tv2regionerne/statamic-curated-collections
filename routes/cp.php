@@ -5,7 +5,6 @@ use Tv2regionerne\StatamicCuratedCollection\Http\Controllers\CP\ApiEntriesContro
 use Tv2regionerne\StatamicCuratedCollection\Http\Controllers\CP\ApiEntryRelationController;
 use Tv2regionerne\StatamicCuratedCollection\Http\Controllers\CP\CuratedCollectionBlueprintController;
 use Tv2regionerne\StatamicCuratedCollection\Http\Controllers\CP\CuratedCollectionController;
-use Tv2regionerne\StatamicCuratedCollection\Http\Controllers\CP\CuratedCollectionEntriesController;
 
 Route::get('/curated-collections/api/collections/{curatedCollection:handle}/entries', [ApiEntriesController::class, 'index'])->name('curated-collections.api.entries.index');
 Route::post('/curated-collections/api/collections/{curatedCollection:handle}/entries', [ApiEntriesController::class, 'store'])->name('curated-collections.api.entries.store');
@@ -20,4 +19,3 @@ Route::get('/curated-collections/api/entry-relations/{id}', [ApiEntryRelationCon
 Route::resource('curated-collections', CuratedCollectionController::class);
 Route::get('/curated-collections/{curatedCollection}/blueprint', [CuratedCollectionBlueprintController::class, 'edit'])->name('curated-collections.blueprint.edit');
 Route::patch('/curated-collections/{curatedCollection}/blueprint', [CuratedCollectionBlueprintController::class, 'update'])->name('curated-collections.blueprint.update');
-Route::resource('curated-collections/{curatedCollection:handle}/entries', CuratedCollectionEntriesController::class);
