@@ -111,4 +111,3 @@ test('doesn\'t get gets curated collection edit page when the user has no permis
         ->get(cp_route('curated-collections.edit', [$curated->handle]))
         ->assertRedirect();
 });
-
