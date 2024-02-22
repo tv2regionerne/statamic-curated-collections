@@ -19,16 +19,15 @@ class StatamicCuratedCollection extends Tags
      */
     public function wildcard($tag)
     {
-
         $curatedCollection = CuratedCollection::where('handle', $tag)->first();
         if (! $curatedCollection) {
             return null;
         }
 
-        $fallback = $this->params->get('fallback', false);
         $limit = $this->params->get('limit', 10);
 
         $entries = [];
+
         $query = CuratedCollectionEntry::query()
             ->where('curated_collection_id', $curatedCollection->id)
             ->where('status', 'published')
@@ -39,46 +38,54 @@ class StatamicCuratedCollection extends Tags
             $query->whereNotIn('entry_id', $ids);
         }
 
-        $query->get()->each(function (CuratedCollectionEntry $entry) use (&$entries, &$ids) {
-            $e = $entry->entry();
-            if (! $e) {
-                return;
-            }
+        $entries = $query->get()
+            ->map(function (CuratedCollectionEntry $entry) use (&$ids) {
+                if (! $e = $entry->entry()) {
+                    return;
+                }
 
-            if ($e->published() === false) {
-                return;
-            }
+                if ($e->published() === false) {
+                    return;
+                }
 
-            $ids[] = $e->id();
-            $e->set('curated_collection_data', $entry->processedData());
-            $e->set('curated_collection_order', $entry->order_column);
-            $e->set('curated_collection_source', 'list');
-            $entries[] = $e;
-        });
+                $ids[] = $e->id();
 
-        if ($fallback && count($entries) < $limit) {
+                $e->merge([
+                    'curated_collection_data' => $entry->processedData(),
+                    'curated_collection_order' => $entry->order_column,
+                    'curated_collection_source' => 'list',
+                ]);
+
+                return $e;
+            })
+            ->filter();
+
+        if ($this->params->get('fallback', false) && count($entries) < $limit) {
             $fallbackEntries = Entry::query()
                 ->where('collection', $curatedCollection->fallback_collection)
                 ->where('status', 'published')
                 ->whereNotIn('id', $ids ?? [])
                 ->limit($limit - count($entries))
                 ->orderBy($curatedCollection->fallback_sort_field, $curatedCollection->fallback_sort_direction)
-                ->get();
-            $fallbackEntries->transform(function ($e) {
-                $e->set('curated_collection_source', 'fallback');
+                ->get()
+                ->transform(function ($e) {
+                    $e->set('curated_collection_source', 'fallback');
 
-                return $e;
-            });
-            $entries = array_merge($entries, $fallbackEntries->all());
+                    return $e;
+                });
+
+            $entries = $entries->concat($fallbackEntries);
         }
 
-        if ($as = $this->params->get('as')) {
-            return [$as => $entries];
-        }
+        $entries = $entries->all();
 
         $this->deduplicateUpdate($entries);
 
         CuratedCollectionTagEvent::dispatch($tag);
+
+        if ($as = $this->params->get('as')) {
+            return [$as => $entries];
+        }
 
         return $entries;
     }
@@ -96,10 +103,6 @@ class StatamicCuratedCollection extends Tags
     {
         if (! $this->params->get('deduplicate', false)) {
             return;
-        }
-
-        if ($as = $this->params->get('as')) {
-            $entries = $entries[$as];
         }
 
         $ids = collect($entries)->pluck('id')->all();

@@ -3,12 +3,14 @@
 namespace Tv2regionerne\StatamicCuratedCollection\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Statamic\Events\NavBlueprintFound;
 use Statamic\Facades\Blueprint;
 
 class CuratedCollection extends Model
 {
+    use HasFactory;
     use HasUuids;
 
     protected $appends = ['display_form_computed'];
@@ -18,7 +20,6 @@ class CuratedCollection extends Model
         'handle',
         'site',
         'collections',
-        'max_items',
         'display_form',
         'fallback_collection',
         'fallback_sort_field',
@@ -45,18 +46,22 @@ class CuratedCollection extends Model
     {
         $blueprint = $this->blueprint();
         if (! $blueprint->hasField('entry')) {
+
             $blueprint->ensureField('id', [
                 'visibility' => 'hidden',
                 'type' => 'text',
             ], null, true);
+
             $blueprint->ensureField('curated_collection_id', [
                 'visibility' => 'hidden',
                 'type' => 'text',
             ], null, true);
+
             $blueprint->ensureField('collection', [
                 'visibility' => 'hidden',
                 'type' => 'collections',
             ], null, true);
+
             $blueprint->ensureField('unpublish_at', [
                 'type' => 'date',
                 'display' => __('Fjern fra listen den'),
@@ -68,6 +73,7 @@ class CuratedCollection extends Model
                     'nullable',
                 ],
             ], null, true);
+
             $blueprint->ensureField('published', [
                 'visibility' => 'hidden',
                 'type' => 'toggle',
@@ -75,6 +81,7 @@ class CuratedCollection extends Model
                 //'instructions' => __(''),
                 'width' => 50,
             ], null, true);
+
             $blueprint->ensureField('expiration_time', [
                 'type' => 'integer',
                 'display' => __('Udløbstid i timer'),
@@ -84,6 +91,7 @@ class CuratedCollection extends Model
                     'published' => false,
                 ],
             ], null, true);
+
             $blueprint->ensureField('order', [
                 'type' => 'integer',
                 'display' => __('Position'),
@@ -93,6 +101,7 @@ class CuratedCollection extends Model
                     'published' => true,
                 ],
             ], null, true);
+
             $blueprint->ensureField('publish_order', [
                 'type' => 'integer',
                 'display' => __('Publish Position'),
@@ -102,6 +111,7 @@ class CuratedCollection extends Model
                     'published' => false,
                 ],
             ], null, true);
+
             $blueprint->ensureField('entry', [
                 'visibility' => 'hidden',
                 'type' => 'entries',
@@ -114,7 +124,6 @@ class CuratedCollection extends Model
                     'required',
                 ],
             ], null, true);
-
         }
 
         return $blueprint;

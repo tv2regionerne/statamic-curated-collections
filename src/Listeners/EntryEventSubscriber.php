@@ -17,14 +17,14 @@ class EntryEventSubscriber
 
     public function handleEntryDeleted(EntryDeleted $event)
     {
-        $curatedColletionEntries = CuratedCollectionEntry::where('entry_id', $event->entry->id())->get();
+        $curatedCollectionEntries = CuratedCollectionEntry::where('entry_id', $event->entry->id())->get();
 
         $curatedCollectionsToReorder = [];
 
         // delete all curatedColletionEntries related to the deleted entry
-        $curatedColletionEntries->each(function ($curatedColletionEntry) use (&$curatedCollectionsToReorder) {
-            $curatedColletionEntry->delete();
-            $curatedCollectionsToReorder[$curatedColletionEntry->curatedCollection->id] = $curatedColletionEntry->curatedCollection;
+        $curatedCollectionEntries->each(function ($curatedCollectionEntry) use (&$curatedCollectionsToReorder) {
+            $curatedCollectionEntry->delete();
+            $curatedCollectionsToReorder[$curatedCollectionEntry->curatedCollection->id] = $curatedCollectionEntry->curatedCollection;
         });
 
         // reorder the collection entries where entries have been deleted
@@ -38,34 +38,37 @@ class EntryEventSubscriber
     public function handleEntrySaved(EntrySaved $event)
     {
         $entry = $event->entry;
+
+        // Publish all curated collection entries
         if ($entry->status() === 'published') {
-            // Publish all curated collection entries
-            $curatedColletionEntries = CuratedCollectionEntry::where('status', 'draft')
+            $curatedCollectionEntries = CuratedCollectionEntry::where('status', 'draft')
                 ->where('entry_id', $event->entry->id())
                 ->get();
 
-            $curatedColletionEntries->each(function ($entry) {
+            $curatedCollectionEntries->each(function ($entry) {
                 $entry->publish();
             });
 
-        } else {
-            // Delete any published curated collection entries
-            $curatedColletionEntries = CuratedCollectionEntry::where('status', 'published')
-                ->where('entry_id', $event->entry->id())
-                ->get();
+            return;
+        }
 
-            $curatedCollectionsToReorder = [];
+        // Delete any published curated collection entries
+        $curatedCollectionEntries = CuratedCollectionEntry::where('status', 'published')
+            ->where('entry_id', $event->entry->id())
+            ->get();
 
-            $curatedColletionEntries->each(function (CuratedCollectionEntry $curatedCollectionEntry) use (&$curatedCollectionsToReorder) {
-                $curatedCollectionEntry->delete();
-                $curatedCollectionsToReorder[$curatedCollectionEntry->curatedCollection->id] = $curatedCollectionEntry->curatedCollection;
-            });
+        $curatedCollectionsToReorder = [];
 
-            // reorder the collection entries where entries have been deleted
-            foreach ($curatedCollectionsToReorder as $curatedCollection) {
-                $curatedCollection->reorderEntries();
-                CuratedCollectionUpdatedEvent::dispatch($curatedCollection->handle);
-            }
+        $curatedCollectionEntries->each(function (CuratedCollectionEntry $curatedCollectionEntry) use (&$curatedCollectionsToReorder) {
+            $curatedCollectionEntry->delete();
+            $curatedCollectionsToReorder[$curatedCollectionEntry->curatedCollection->id] = $curatedCollectionEntry->curatedCollection;
+        });
+
+        // reorder the collection entries where entries have been deleted
+        foreach ($curatedCollectionsToReorder as $curatedCollection) {
+            $curatedCollection->reorderEntries();
+
+            CuratedCollectionUpdatedEvent::dispatch($curatedCollection->handle);
         }
     }
 
@@ -76,6 +79,5 @@ class EntryEventSubscriber
             EntryCreated::class => 'handleEntryCreated',
             EntrySaved::class => 'handleEntrySaved',
         ];
-
     }
 }

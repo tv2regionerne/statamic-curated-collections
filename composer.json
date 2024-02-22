@@ -3,7 +3,13 @@
     "description": "Create curated collections in statamic. Can be used to prioritize content for you frontpage etc.",
     "autoload": {
         "psr-4": {
-            "Tv2regionerne\\StatamicCuratedCollection\\": "src"
+            "Tv2regionerne\\StatamicCuratedCollection\\": "src",
+            "Database\\Factories\\Tv2regionerne\\StatamicCuratedCollection\\Models\\": "database/factories"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tv2regionerne\\StatamicCuratedCollection\\Tests\\": "tests"
         }
     },
     "extra": {
@@ -19,13 +25,28 @@
     },
     "require": {
         "php": "^8.2",
-        "spatie/eloquent-sortable": "^4.0"
+        "spatie/eloquent-sortable": "^4.0",
+        "statamic/cms": "^4.0"
     },
     "require-dev": {
-        "statamic/cms": "^4.0"
+        "laravel/pint": "^1.13",
+        "mockery/mockery": "^1.3.1",
+        "nunomaduro/collision": "^6.0 || ^7.0",
+        "orchestra/testbench": "^7.0 || ^8.0",
+        "pestphp/pest": "^2.24",
+        "phpunit/phpunit": "^9.0 || ^10.0"
+    },
+    "scripts": {
+        "pint": [
+            "php -d memory_limit=-1 ./vendor/bin/pint"
+        ],
+        "test": [
+            "php -d memory_limit=-1 ./vendor/bin/pest"
+        ]
     },
     "config": {
         "allow-plugins": {
+            "pestphp/pest-plugin": true,
             "pixelfear/composer-dist-plugin": true
         }
     }
