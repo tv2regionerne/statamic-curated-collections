@@ -4,7 +4,6 @@ namespace Tv2regionerne\StatamicCuratedCollection\Tests;
 
 use Illuminate\Encryption\Encrypter;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\LivewireServiceProvider;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 use Statamic\Extend\Manifest;
 use Statamic\Providers\StatamicServiceProvider;
@@ -24,9 +23,6 @@ abstract class TestCase extends OrchestraTestCase
 
         $this->runLaravelMigrations();
 
-        \Facades\Statamic\Version::shouldReceive('get')->andReturn('4.0.0-testing');
-        $this->addToAssertionCount(-1); // Dont want to assert this
-
         $this->preventSavingStacheItemsToDisk();
     }
 
@@ -40,7 +36,6 @@ abstract class TestCase extends OrchestraTestCase
     protected function getPackageProviders($app)
     {
         return [
-            LivewireServiceProvider::class,
             StatamicServiceProvider::class,
             ServiceProvider::class,
         ];
@@ -58,7 +53,7 @@ abstract class TestCase extends OrchestraTestCase
         parent::getEnvironmentSetUp($app);
 
         $app->make(Manifest::class)->manifest = [
-            'tv2regionerne/statamic-liveblog' => [
+            'tv2regionerne/statamic-curated-collections' => [
                 'id' => 'tv2regionerne/statamic-curated-collections',
                 'namespace' => 'Tv2regionerne\\StatamicCuratedCollection',
             ],
@@ -98,8 +93,16 @@ abstract class TestCase extends OrchestraTestCase
             'directory' => __DIR__.'/__fixtures__/users',
         ]);
 
+        $app['config']->set('statamic.stache.watcher', false);
+        $app['config']->set('statamic.stache.stores.collections.directory', __DIR__.'/__fixtures__/content/collections');
+        $app['config']->set('statamic.stache.stores.entries.directory', __DIR__.'/__fixtures__/content/collections');
+
         $app['config']->set('curated-collections', require (__DIR__.'/../config/curated-collections.php'));
 
         $app['config']->set('app.debug', true);
+
+        $app->singleton('deduplicate', function () {
+            return new Deduplicate();
+        });
     }
 }

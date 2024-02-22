@@ -4,6 +4,7 @@ namespace Tv2regionerne\StatamicCuratedCollection\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Spatie\EloquentSortable\SortableTrait;
@@ -11,6 +12,7 @@ use Statamic\Facades\Entry;
 
 class CuratedCollectionEntry extends Model
 {
+    use HasFactory;
     use HasUuids;
     use SortableTrait;
 
@@ -20,7 +22,6 @@ class CuratedCollectionEntry extends Model
     ];
 
     protected $fillable = [
-        'title',
         'collection',
         'site',
         'entry_id',

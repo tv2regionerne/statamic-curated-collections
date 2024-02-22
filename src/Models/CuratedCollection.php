@@ -3,12 +3,14 @@
 namespace Tv2regionerne\StatamicCuratedCollection\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Statamic\Events\NavBlueprintFound;
 use Statamic\Facades\Blueprint;
 
 class CuratedCollection extends Model
 {
+    use HasFactory;
     use HasUuids;
 
     protected $appends = ['display_form_computed'];
@@ -18,7 +20,6 @@ class CuratedCollection extends Model
         'handle',
         'site',
         'collections',
-        'max_items',
         'display_form',
         'fallback_collection',
         'fallback_sort_field',

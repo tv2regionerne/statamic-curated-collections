@@ -3,7 +3,8 @@
     "description": "Create curated collections in statamic. Can be used to prioritize content for you frontpage etc.",
     "autoload": {
         "psr-4": {
-            "Tv2regionerne\\StatamicCuratedCollection\\": "src"
+            "Tv2regionerne\\StatamicCuratedCollection\\": "src",
+            "Database\\Factories\\Tv2regionerne\\StatamicCuratedCollection\\Models\\": "database/factories"
         }
     },
     "autoload-dev": {
