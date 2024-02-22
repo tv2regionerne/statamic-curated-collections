@@ -235,7 +235,7 @@ describe('curated collection tag tests', function () {
         Event::assertDispatched(CuratedCollectionTagEvent::class);
     });
 
-    it ('ignores ids specified in dedeplicate and adds ids to deduplicate', function () {
+    it('ignores ids specified in dedeplicate and adds ids to deduplicate', function () {
         setupDummyCollectionAndEntries();
 
         $entry1 = Facades\Entry::query()->where('title', 'Entry 1')->first();

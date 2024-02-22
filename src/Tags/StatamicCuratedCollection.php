@@ -53,7 +53,7 @@ class StatamicCuratedCollection extends Tags
                 $e->merge([
                     'curated_collection_data' => $entry->processedData(),
                     'curated_collection_order' => $entry->order_column,
-                    'curated_collection_source' => 'list'
+                    'curated_collection_source' => 'list',
                 ]);
 
                 return $e;
