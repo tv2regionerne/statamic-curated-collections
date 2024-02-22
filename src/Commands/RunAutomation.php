@@ -26,25 +26,39 @@ class RunAutomation extends Command
      */
     public function handle()
     {
+        $this->publishDraftEntries();
+
+        $this->newLine();
+
+        $this->expireAutomatedEntries();
+
+    }
+
+    private function publishDraftEntries()
+    {
         // Check all draft entries if they are now published.
         // Workaround for dated collections as no event is fired at the time a date is crossed and status changes
-        $entries = CuratedCollectionEntry::where('status', 'draft');
+        $entriesToBePublished = CuratedCollectionEntry::where('status', 'draft')
+            ->get()
+            ->filter(function ($curatedCollectionEntry) {
+                if (! $entry = $curatedCollectionEntry->entry()) {
+                    return;
+                }
 
-        $entriesToBePublished = $entries->get()->filter(function ($curatedCollectionEntry) {
-            //            return true;
-            return $curatedCollectionEntry->entry() && $curatedCollectionEntry->entry()->status() === 'published';
-        });
+                return $entry->status() === 'published';
+            });
 
         $this->info('Found '.$entriesToBePublished->count().' entries to be published');
 
         $this->withProgressBar($entriesToBePublished, function (CuratedCollectionEntry $curatedCollectionEntry) {
-            $entry = $curatedCollectionEntry->entry();
-            if ($entry && $entry->status() === 'published') {
-                $entry->publish();
-            }
+            $curatedCollectionEntry->entry()?->publish();
         });
-        $this->newLine();
 
+        $this->info('Published');
+    }
+
+    private function expireAutomatedEntries()
+    {
         // delete any entries which has expired in curated collections with automation enabled
         $expiredEntriesWithAutomation = CuratedCollectionEntry::where('status', 'published')
             ->whereHas('curatedCollection', function ($query) {
@@ -59,5 +73,7 @@ class RunAutomation extends Command
             $curatedCollectionEntry->delete();
             $curatedCollectionEntry->curatedCollection->reorderEntries();
         });
+
+        $this->info('Deleted');
     }
 }
