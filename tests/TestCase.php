@@ -23,6 +23,8 @@ abstract class TestCase extends OrchestraTestCase
 
         $this->runLaravelMigrations();
 
+        \Facades\Statamic\Version::shouldReceive('get')->andReturn('4.0.0-testing');
+
         $this->preventSavingStacheItemsToDisk();
     }
 
