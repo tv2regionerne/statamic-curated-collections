@@ -82,7 +82,7 @@ abstract class TestCase extends OrchestraTestCase
         foreach ($configs as $config) {
             $app['config']->set(
                 "statamic.$config",
-                require (__DIR__."/../vendor/statamic/cms/config/{$config}.php")
+                require(__DIR__."/../vendor/statamic/cms/config/{$config}.php")
             );
         }
 
@@ -97,7 +97,7 @@ abstract class TestCase extends OrchestraTestCase
         $app['config']->set('statamic.stache.stores.collections.directory', __DIR__.'/__fixtures__/content/collections');
         $app['config']->set('statamic.stache.stores.entries.directory', __DIR__.'/__fixtures__/content/collections');
 
-        $app['config']->set('curated-collections', require (__DIR__.'/../config/curated-collections.php'));
+        $app['config']->set('curated-collections', require(__DIR__.'/../config/curated-collections.php'));
 
         $app['config']->set('app.debug', true);
 
