@@ -1,7 +1,5 @@
 <?php
 
-uses(\Tv2regionerne\StatamicCuratedCollection\Tests\TestCase::class);
-
 use Illuminate\Support\Facades\Event;
 use Statamic\Facades;
 use Tv2regionerne\StatamicCuratedCollection\Events\CuratedCollectionTagEvent;
@@ -9,42 +7,6 @@ use Tv2regionerne\StatamicCuratedCollection\Models\CuratedCollection;
 use Tv2regionerne\StatamicCuratedCollection\Models\CuratedCollectionEntry;
 
 describe('curated collection tag tests', function () {
-
-    function tag($tag, $data = [])
-    {
-        return (string) Facades\Parse::template($tag, $data);
-    }
-
-    function setupDummyCollectionAndEntries()
-    {
-        $collection = Facades\Collection::make()
-            ->handle('articles')
-            ->save();
-
-        $entry1 = Facades\Entry::make()
-            ->collection('articles')
-            ->data([
-                'title' => 'Entry 1',
-                'sort_field' => 99,
-            ])
-            ->save();
-
-        $entry3 = Facades\Entry::make()
-            ->collection('articles')
-            ->data([
-                'title' => 'Entry 2',
-                'sort_field' => 66,
-            ])
-            ->save();
-
-        $entry3 = Facades\Entry::make()
-            ->collection('articles')
-            ->data([
-                'title' => 'Entry 3',
-                'sort_field' => 33,
-            ])
-            ->save();
-    }
 
     it('doesnt output anything when the curated collection doesnt exit', function () {
         $result = tag('{{ curated_collection:test }}{{ /curated_collection:test }}');
