@@ -2,10 +2,12 @@
 
 namespace Tv2regionerne\StatamicCuratedCollection;
 
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Statamic\Facades\CP\Nav;
 use Statamic\Facades\Permission;
 use Statamic\Providers\AddonServiceProvider;
+use Tv2regionerne\StatamicCache\Facades\Store;
 use Tv2regionerne\StatamicCuratedCollection\Commands\RunAutomation;
 use Tv2regionerne\StatamicCuratedCollection\Filters\ActiveStatus;
 use Tv2regionerne\StatamicCuratedCollection\Http\Controllers\Api\CuratedCollectionController;
@@ -58,7 +60,8 @@ class ServiceProvider extends AddonServiceProvider
 
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
 
-        $this->bootApi();
+        $this->bootApi()
+            ->bootAutocache();
     }
 
     public function bootAddon()
@@ -141,6 +144,25 @@ class ServiceProvider extends AddonServiceProvider
 
                             });
                     });
+            });
+        }
+
+        return $this;
+    }
+
+    private function bootAutocache(): self
+    {
+        if (class_exists(Store::class)) {
+            Event::listen(Events\CuratedCollectionUpdatedEvent::class, function ($event) {
+                $tags = [
+                    'curated-collection:'.$event->tag,
+                ];
+
+                Store::invalidateContent($tags);
+            });
+
+            Tags\StatamicCuratedCollection::hook('init', function () {
+                Store::mergeTags([$this->tag]);
             });
         }
 
