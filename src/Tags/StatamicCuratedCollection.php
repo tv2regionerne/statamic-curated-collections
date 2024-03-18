@@ -2,7 +2,10 @@
 
 namespace Tv2regionerne\StatamicCuratedCollection\Tags;
 
+use Illuminate\Contracts\Pagination\Paginator;
 use Statamic\Facades\Entry;
+use Statamic\Tags\Concerns\GetsQueryResults;
+use Statamic\Tags\Concerns\OutputsItems;
 use Statamic\Tags\Tags;
 use Tv2regionerne\StatamicCuratedCollection\Events\CuratedCollectionTagEvent;
 use Tv2regionerne\StatamicCuratedCollection\Models\CuratedCollection;
@@ -10,7 +13,21 @@ use Tv2regionerne\StatamicCuratedCollection\Models\CuratedCollectionEntry;
 
 class StatamicCuratedCollection extends Tags
 {
+    use GetsQueryResults, OutputsItems;
+
     protected static $handle = 'curated_collection';
+
+    /**
+     * The {{ curated_collection from="x" }} tag.
+     *
+     * @return array
+     */
+    public function index()
+    {
+        if ($from = $this->params->has('from')) {
+            return $this->wildcard($from);
+        }
+    }
 
     /**
      * The {{ curated_collection:* }} tag.
@@ -31,14 +48,15 @@ class StatamicCuratedCollection extends Tags
         $query = CuratedCollectionEntry::query()
             ->where('curated_collection_id', $curatedCollection->id)
             ->where('status', 'published')
-            ->ordered()
-            ->limit($limit);
+            ->ordered();
 
         if ($ids = $this->deduplicateApply()) {
             $query->whereNotIn('entry_id', $ids);
         }
 
-        $entries = $query->get()
+        $results = $this->results($query);
+
+        $entries = ($results instanceof Paginator ? $results->getCollection() : $results)
             ->map(function (CuratedCollectionEntry $entry) use (&$ids) {
                 if (! $e = $entry->entry()) {
                     return;
@@ -60,34 +78,36 @@ class StatamicCuratedCollection extends Tags
             })
             ->filter();
 
-        if ($this->params->get('fallback', false) && count($entries) < $limit) {
-            $fallbackEntries = Entry::query()
-                ->where('collection', $curatedCollection->fallback_collection)
-                ->where('status', 'published')
-                ->whereNotIn('id', $ids ?? [])
-                ->limit($limit - count($entries))
-                ->orderBy($curatedCollection->fallback_sort_field, $curatedCollection->fallback_sort_direction)
-                ->get()
-                ->transform(function ($e) {
-                    $e->set('curated_collection_source', 'fallback');
+        if (! $results instanceof Paginator) {
+            if ($this->params->get('fallback', false) && count($entries) < $limit) {
+                $fallbackEntries = Entry::query()
+                    ->where('collection', $curatedCollection->fallback_collection)
+                    ->where('status', 'published')
+                    ->whereNotIn('id', $ids ?? [])
+                    ->limit($limit - count($entries))
+                    ->orderBy($curatedCollection->fallback_sort_field, $curatedCollection->fallback_sort_direction)
+                    ->get()
+                    ->transform(function ($e) {
+                        $e->set('curated_collection_source', 'fallback');
 
-                    return $e;
-                });
+                        return $e;
+                    });
 
-            $entries = $entries->concat($fallbackEntries);
+                $entries = $entries->concat($fallbackEntries);
+            }
         }
 
         $entries = $entries->all();
+
+        if ($results instanceof Paginator) {
+            $results->setCollection($entries);
+        }
 
         $this->deduplicateUpdate($entries);
 
         CuratedCollectionTagEvent::dispatch($tag);
 
-        if ($as = $this->params->get('as')) {
-            return [$as => $entries];
-        }
-
-        return $entries;
+        return $this->output($results);
     }
 
     protected function deduplicateApply()
