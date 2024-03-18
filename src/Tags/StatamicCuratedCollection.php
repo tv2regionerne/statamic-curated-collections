@@ -3,9 +3,9 @@
 namespace Tv2regionerne\StatamicCuratedCollection\Tags;
 
 use Illuminate\Contracts\Pagination\Paginator;
+use Statamic\Facades\Entry;
 use Statamic\Tags\Concerns\GetsQueryResults;
 use Statamic\Tags\Concerns\OutputsItems;
-use Statamic\Facades\Entry;
 use Statamic\Tags\Tags;
 use Tv2regionerne\StatamicCuratedCollection\Events\CuratedCollectionTagEvent;
 use Tv2regionerne\StatamicCuratedCollection\Models\CuratedCollection;
