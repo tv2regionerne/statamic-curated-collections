@@ -98,6 +98,19 @@ describe('curated collection tag tests', function () {
         $this->assertSame('Entry 1', $result);
     });
 
+    it('paginates when specified', function () {
+        setupDummyCollectionAndEntries();
+
+        $curated = CuratedCollection::factory()->make();
+        $curated->handle = 'test';
+        $curated->fallback_collection = 'articles';
+        $curated->save();
+
+        $result = tag('{{ curated_collection:test paginate="1" }}{{ paginate:total_items }}{{ /curated_collection:test }}');
+
+        $this->assertSame('0', $result);
+    });
+
     it('outputs curated collection entries', function () {
         setupDummyCollectionAndEntries();
 
