@@ -3,6 +3,7 @@
 namespace Tv2regionerne\StatamicCuratedCollection\Tags;
 
 use Illuminate\Contracts\Pagination\Paginator;
+use Statamic\Data\DataCollection;
 use Statamic\Facades\Entry;
 use Statamic\Tags\Concerns\GetsQueryResults;
 use Statamic\Tags\Concerns\OutputsItems;
@@ -97,10 +98,10 @@ class StatamicCuratedCollection extends Tags
             }
         }
 
-        $entries = $entries->all();
-
         if ($results instanceof Paginator) {
-            $results->setCollection($entries);
+            $results->setCollection(new DataCollection($entries));
+        } else {
+            $results = $entries;
         }
 
         $this->deduplicateUpdate($entries);
@@ -128,5 +129,18 @@ class StatamicCuratedCollection extends Tags
         $ids = collect($entries)->pluck('id')->all();
 
         app('deduplicate')->merge($ids);
+    }
+
+    protected function getPaginationData($paginator)
+    {
+        return [
+            'total_items' => $paginator->total(),
+            'items_per_page' => $paginator->perPage(),
+            'total_pages' => $paginator->lastPage(),
+            'current_page' => $paginator->currentPage(),
+            'prev_page' => $paginator->previousPageUrl(),
+            'next_page' => $paginator->nextPageUrl(),
+            'auto_links' => (string) $paginator->render('pagination::default'),
+        ];
     }
 }
