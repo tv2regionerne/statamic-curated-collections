@@ -2,7 +2,11 @@
 
 namespace Tv2regionerne\StatamicCuratedCollection\Tags;
 
+use Illuminate\Contracts\Pagination\Paginator;
+use Statamic\Data\DataCollection;
 use Statamic\Facades\Entry;
+use Statamic\Tags\Concerns\GetsQueryResults;
+use Statamic\Tags\Concerns\OutputsItems;
 use Statamic\Tags\Tags;
 use Tv2regionerne\StatamicCuratedCollection\Events\CuratedCollectionTagEvent;
 use Tv2regionerne\StatamicCuratedCollection\Models\CuratedCollection;
@@ -10,7 +14,21 @@ use Tv2regionerne\StatamicCuratedCollection\Models\CuratedCollectionEntry;
 
 class StatamicCuratedCollection extends Tags
 {
+    use GetsQueryResults, OutputsItems;
+
     protected static $handle = 'curated_collection';
+
+    /**
+     * The {{ curated_collection from="x" }} tag.
+     *
+     * @return array
+     */
+    public function index()
+    {
+        if ($from = $this->params->has('from')) {
+            return $this->wildcard($from);
+        }
+    }
 
     /**
      * The {{ curated_collection:* }} tag.
@@ -24,69 +42,73 @@ class StatamicCuratedCollection extends Tags
             return null;
         }
 
-        $fallback = $this->params->get('fallback', false);
         $limit = $this->params->get('limit', 10);
-        $offset = $this->params->get('offset', 0);
 
         $entries = [];
+
         $query = CuratedCollectionEntry::query()
             ->where('curated_collection_id', $curatedCollection->id)
             ->where('status', 'published')
-            ->ordered()
-            ->limit($limit);
+            ->ordered();
 
         if ($ids = $this->deduplicateApply()) {
             $query->whereNotIn('entry_id', $ids);
         }
 
-        $query->get()->each(function (CuratedCollectionEntry $entry) use (&$entries, &$ids) {
-            $e = $entry->entry();
-            if (! $e) {
-                return;
-            }
+        $results = $this->results($query);
 
-            if ($e->published() === false) {
-                return;
-            }
+        $entries = ($results instanceof Paginator ? $results->getCollection() : $results)
+            ->map(function (CuratedCollectionEntry $entry) use (&$ids) {
+                if (! $e = $entry->entry()) {
+                    return;
+                }
 
-            $ids[] = $e->id();
-            $e->set('curated_collection_data', $entry->processedData());
-            $e->set('curated_collection_order', $entry->order_column);
-            $e->set('curated_collection_source', 'list');
-            $entries[] = $e;
-        });
+                if ($e->published() === false) {
+                    return;
+                }
 
-        if ($fallback && count($entries) < $limit) {
-            $fallbackEntries = Entry::query()
-                ->where('collection', $curatedCollection->fallback_collection)
-                ->where('status', 'published')
-                ->whereNotIn('id', $ids ?? [])
-                ->limit($limit - count($entries))
-                ->orderBy($curatedCollection->fallback_sort_field, $curatedCollection->fallback_sort_direction)
-                ->get();
-            $fallbackEntries->transform(function ($e) {
-                $e->set('curated_collection_source', 'fallback');
+                $ids[] = $e->id();
+
+                $e->merge([
+                    'curated_collection_data' => $entry->processedData(),
+                    'curated_collection_order' => $entry->order_column,
+                    'curated_collection_source' => 'list',
+                ]);
 
                 return $e;
-            });
-            $entries = array_merge($entries, $fallbackEntries->all());
+            })
+            ->filter();
+
+        if (! $results instanceof Paginator) {
+            if ($this->params->get('fallback', false) && count($entries) < $limit) {
+                $fallbackEntries = Entry::query()
+                    ->where('collection', $curatedCollection->fallback_collection)
+                    ->where('status', 'published')
+                    ->whereNotIn('id', $ids ?? [])
+                    ->limit($limit - count($entries))
+                    ->orderBy($curatedCollection->fallback_sort_field, $curatedCollection->fallback_sort_direction)
+                    ->get()
+                    ->transform(function ($e) {
+                        $e->set('curated_collection_source', 'fallback');
+
+                        return $e;
+                    });
+
+                $entries = $entries->concat($fallbackEntries);
+            }
         }
 
-        if ($offset > 0) {
-            $entries = collect($entries)->skip($offset)->all();
+        if ($results instanceof Paginator) {
+            $results->setCollection(new DataCollection($entries));
+        } else {
+            $results = $entries;
         }
 
-        if ($as = $this->params->get('as')) {
-            return [$as => $entries];
-        }
-
-        if (count($entries) > 0) {
-            $this->deduplicateUpdate($entries);
-        }
+        $this->deduplicateUpdate($entries);
 
         CuratedCollectionTagEvent::dispatch($tag);
 
-        return $entries;
+        return $this->output($results);
     }
 
     protected function deduplicateApply()
@@ -104,12 +126,21 @@ class StatamicCuratedCollection extends Tags
             return;
         }
 
-        if ($as = $this->params->get('as')) {
-            $entries = $entries[$as];
-        }
-
         $ids = collect($entries)->pluck('id')->all();
 
         app('deduplicate')->merge($ids);
+    }
+
+    protected function getPaginationData($paginator)
+    {
+        return [
+            'total_items' => $paginator->total(),
+            'items_per_page' => $paginator->perPage(),
+            'total_pages' => $paginator->lastPage(),
+            'current_page' => $paginator->currentPage(),
+            'prev_page' => $paginator->previousPageUrl(),
+            'next_page' => $paginator->nextPageUrl(),
+            'auto_links' => (string) $paginator->render('pagination::default'),
+        ];
     }
 }
