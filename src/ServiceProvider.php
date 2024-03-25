@@ -2,12 +2,14 @@
 
 namespace Tv2regionerne\StatamicCuratedCollection;
 
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\View;
 use Statamic\Facades\CP\Nav;
 use Statamic\Facades\Permission;
 use Statamic\Http\View\Composers\FieldComposer;
 use Statamic\Providers\AddonServiceProvider;
+use Tv2regionerne\StatamicCache\Facades\Store as CacheStore;
 use Tv2regionerne\StatamicCuratedCollection\Commands\RunAutomation;
 use Tv2regionerne\StatamicCuratedCollection\Filters\ActiveStatus;
 use Tv2regionerne\StatamicCuratedCollection\Http\Controllers\Api\CuratedCollectionController;
@@ -67,7 +69,9 @@ class ServiceProvider extends AddonServiceProvider
 
     public function bootAddon()
     {
-        $this->bootPermissions();
+        $this
+            ->bootPermissions()
+            ->bootCache();
 
         Nav::extend(function ($nav) {
 
@@ -145,6 +149,21 @@ class ServiceProvider extends AddonServiceProvider
 
                             });
                     });
+            });
+        }
+
+        return $this;
+    }
+
+    private function bootCache(): self
+    {
+        if (class_exists(CacheStore::class)) {
+            Event::listen(function (Events\CuratedCollectionTagEvent $event) {
+                CacheStore::mergeTags(['curated_collections:'.$event->tag]);
+            });
+
+            Event::listen(function (Events\CuratedCollectionUpdatedEvent $event) {
+                CacheStore::invalidateContent(['curated_collections:'.$event->tag]);
             });
         }
 
