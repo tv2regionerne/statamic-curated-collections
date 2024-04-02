@@ -28,6 +28,7 @@
         </div>
 
         <view-tab
+            ref="tab"
             :handle="handle"
             :breadcrumbUrl="breadcrumbUrl"
             :collections="collections"
@@ -65,6 +66,22 @@ export default {
         return {
             activeStatus: 'published',
         }
+    },
+
+    mounted() {
+        Statamic.$echo.booted(() => {
+            this.$echo
+                .private(`curated-collections-private.${this.handle.toLowerCase()}`)
+                .listen('.CuratedCollections.CuratedCollectionUpdated', event => this.curatedCollectionPushed(event));
+        });
+    },
+
+    methods: {
+
+        curatedCollectionPushed() {
+            this.$refs.tab.request();
+        },
+
     },
 
 }
