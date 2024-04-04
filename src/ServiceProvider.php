@@ -2,6 +2,7 @@
 
 namespace Tv2regionerne\StatamicCuratedCollection;
 
+use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\View;
@@ -63,6 +64,7 @@ class ServiceProvider extends AddonServiceProvider
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
 
         $this->bootApi();
+        $this->bootBroadcasting();
 
         View::composer(['statamic-curated-collections::curated-collections.blueprints.edit'], FieldComposer::class);
     }
@@ -74,7 +76,6 @@ class ServiceProvider extends AddonServiceProvider
             ->bootCache();
 
         Nav::extend(function ($nav) {
-
             $children = [];
             rescue(function () use (&$nav, &$children) {
                 foreach (CuratedCollection::query()->orderBy('title')->get() as $list) {
@@ -120,7 +121,6 @@ class ServiceProvider extends AddonServiceProvider
                     });
                 });
             });
-
         });
 
         return $this;
@@ -146,7 +146,6 @@ class ServiceProvider extends AddonServiceProvider
                                         Route::get('/', [CuratedCollectionEntriesController::class, 'index']);
                                         Route::post('reorder', [CuratedCollectionEntriesController::class, 'reorder']);
                                     });
-
                             });
                     });
             });
@@ -163,9 +162,20 @@ class ServiceProvider extends AddonServiceProvider
             });
 
             Event::listen(function (Events\CuratedCollectionUpdatedEvent $event) {
-                CacheStore::invalidateContent(['curated_collections:'.$event->tag]);
+                CacheStore::invalidateContent(['curated_collections:'.$event->handle]);
             });
         }
+
+        return $this;
+    }
+
+    private function bootBroadcasting()
+    {
+        Broadcast::channel('curated-collections-private.{handle}', function ($user, string $id) {
+            $user = \Statamic\Facades\User::fromUser($user);
+
+            return $user->isSuper() || $user->can('access cp');
+        }, ['guards' => ['web']]);
 
         return $this;
     }
