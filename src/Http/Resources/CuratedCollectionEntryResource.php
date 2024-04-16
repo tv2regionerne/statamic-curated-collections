@@ -4,6 +4,7 @@ namespace Tv2regionerne\StatamicCuratedCollection\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 use Statamic\Http\Resources\API\EntryResource;
+use Statamic\Http\Resources\CP\Entries\Entry;
 
 class CuratedCollectionEntryResource extends JsonResource
 {
@@ -23,7 +24,7 @@ class CuratedCollectionEntryResource extends JsonResource
             'collection' => $this->collection,
             'entry_id' => $this->entry_id,
             'entry' => [
-                new EntryResource($entry),
+                (new Entry($entry))->toResponse($request)?->getData()?->data
             ],
             'site' => $this->site,
             'status' => $this->status,
