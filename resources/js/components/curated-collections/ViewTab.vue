@@ -2,8 +2,8 @@
 
     <div class="curated-collections-view-tab">
 
-        <div class="flex">
-            <div class="w-1/2">
+        <div class="curated-collections-grid">
+            <div>
 
                 <div v-if="initializing" class="flex items-center justify-center text-center">
                     <loading-graphic />
@@ -36,7 +36,7 @@
                 </data-list>
 
             </div>
-            <div class="w-1/2 pl-6">
+            <div>
 
                 <view-lookup
                     ref="lookup"
@@ -249,3 +249,11 @@ export default {
 
 }
 </script>
+
+<style>
+    .curated-collections-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-gap: 1.5rem;
+    }
+</style>
