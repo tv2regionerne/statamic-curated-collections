@@ -1,13 +1,13 @@
 {
   "resources/js/curated-collections-addon.css": {
-    "file": "assets/curated-collections-addon-4475c9e7.css",
+    "file": "assets/curated-collections-addon-584acd78.css",
     "src": "resources/js/curated-collections-addon.css"
   },
   "resources/js/curated-collections-addon.js": {
     "css": [
-      "assets/curated-collections-addon-4475c9e7.css"
+      "assets/curated-collections-addon-584acd78.css"
     ],
-    "file": "assets/curated-collections-addon-b5e8b3b2.js",
+    "file": "assets/curated-collections-addon-cb5faf41.js",
     "isEntry": true,
     "src": "resources/js/curated-collections-addon.js"
   }

@@ -4,7 +4,7 @@
         <stack half name="curated-collections-entries-panel" @closed="$emit('closed')">
             <div slot-scope="{ close }" class="bg-gray-100 h-full flex flex-col">
 
-                <header class="bg-white pl-6 pr-3 py-2 border-b shadow-md text-lg font-medium flex items-center justify-between">
+                <header class="bg-white px-6 py-2 border-b shadow-md text-lg font-medium flex items-center justify-between">
                     {{ headerText }}
                     <button
                         type="button"
