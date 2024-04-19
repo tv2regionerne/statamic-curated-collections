@@ -34,6 +34,7 @@ class ServiceProvider extends AddonServiceProvider
 
     protected $fieldtypes = [
         Fieldtypes\CuratedCollection::class,
+        Fieldtypes\CuratedCollectionPopup::class,
     ];
 
     protected $commands = [
