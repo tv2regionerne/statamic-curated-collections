@@ -25,7 +25,7 @@ class StatamicCuratedCollection extends Tags
      */
     public function index()
     {
-        if ($from = $this->params->has('from')) {
+        if ($from = $this->params->get('from')) {
             return $this->wildcard($from);
         }
     }
