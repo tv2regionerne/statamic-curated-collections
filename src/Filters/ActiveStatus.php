@@ -13,10 +13,10 @@ class ActiveStatus extends Filter
 
     public function apply($query, $values)
     {
-        $statuses = $values['status'] === 'published'
-            ? ['published']
-            : ['scheduled', 'expired', 'draft'];
-
-        $query->whereIn('status', $statuses);
+        if ($values['status'] === 'published') {
+            $query->where('published', true);
+        } else {
+            $query->where('published', false);
+        }
     }
 }
