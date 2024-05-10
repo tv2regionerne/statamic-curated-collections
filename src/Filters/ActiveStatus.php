@@ -13,10 +13,6 @@ class ActiveStatus extends Filter
 
     public function apply($query, $values)
     {
-        if ($values['status'] === 'published') {
-            $query->where('published', true);
-        } else {
-            $query->where('published', false);
-        }
+        $query->where('published', $values['status'] === 'published');
     }
 }
