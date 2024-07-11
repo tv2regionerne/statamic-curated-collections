@@ -136,7 +136,7 @@ class CuratedCollectionEntry extends Model
 
         $update = ['status' => 'published'];
         if ($this->curatedCollection->update_expiration_on_publish) {
-            $update['expiration'] = now()->addHours($this->expiration_time ?? $this->curatedCollection->expiration_time);
+            $this->unpublishAt(now()->addHours($this->expiration_time ?? $this->curatedCollection->expiration_time));
         }
 
         $this->update($update);
