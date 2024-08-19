@@ -54,6 +54,12 @@ class StatamicCuratedCollection extends Tags
         if ($ids = $this->deduplicateApply()) {
             $query->whereNotIn('entry_id', $ids);
         }
+        if ($ids = $this->params['id:not_in'] ?? null) {
+            if (is_string($ids)) {
+                $ids = explode('|', $ids);
+            }
+            $query->whereNotIn('entry_id', $ids);
+        }
 
         $results = $this->results($query);
 
