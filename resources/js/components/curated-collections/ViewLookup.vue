@@ -86,6 +86,9 @@ export default {
 
     data() {
         return {
+            visibleColumns: [
+                { field: 'title' },
+            ],
             sortColumn: 'date',
             sortDirection: 'desc',
             availableFilters: [],
