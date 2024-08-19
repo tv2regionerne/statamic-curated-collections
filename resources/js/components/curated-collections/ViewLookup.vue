@@ -203,6 +203,15 @@ export default {
 
     },
 
+    watch: {
+        searchQuery: function(value) {
+            if (!value) {
+                this.sortColumn = 'date';
+                this.sortDirection = 'desc';
+            }
+        },
+    }
+
 }
 </script>
 
