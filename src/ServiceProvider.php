@@ -11,7 +11,6 @@ use Statamic\Facades\Permission;
 use Statamic\Http\View\Composers\FieldComposer;
 use Statamic\Providers\AddonServiceProvider;
 use Tv2regionerne\StatamicCache\Facades\Store as CacheStore;
-use Tv2regionerne\StatamicCache\Jobs\Invalidate;
 use Tv2regionerne\StatamicCuratedCollection\Commands\RunAutomation;
 use Tv2regionerne\StatamicCuratedCollection\Filters\ActiveStatus;
 use Tv2regionerne\StatamicCuratedCollection\Http\Controllers\Api\CuratedCollectionController;
@@ -164,8 +163,7 @@ class ServiceProvider extends AddonServiceProvider
             });
 
             Event::listen(function (Events\CuratedCollectionUpdatedEvent $event) {
-                Invalidate::dispatch(['curated_collections:'.$event->handle]);
-                //CacheStore::invalidateContent(['curated_collections:'.$event->handle]);
+                \Tv2regionerne\StatamicCache\Facades\Store::invalidateContent(['curated_collections:'.$event->handle]);
             });
         }
 
