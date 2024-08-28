@@ -39,6 +39,7 @@
             <div>
 
                 <view-lookup
+                    v-if="!initializing"
                     ref="lookup"
                     :activeStatus="activeStatus"
                     :exclusions="exclusions"

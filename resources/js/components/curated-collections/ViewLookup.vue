@@ -112,6 +112,12 @@ export default {
                 this.activeFilterBadges = Object.fromEntries(filteredBadges);
             }
         },
+        searchQuery: function(value) {
+            if (!value) {
+                this.sortColumn = 'date';
+                this.sortDirection = 'desc';
+            }
+        },
     },
     
     mounted() {
@@ -202,15 +208,6 @@ export default {
         },
 
     },
-
-    watch: {
-        searchQuery: function(value) {
-            if (!value) {
-                this.sortColumn = 'date';
-                this.sortDirection = 'desc';
-            }
-        },
-    }
 
 }
 </script>
