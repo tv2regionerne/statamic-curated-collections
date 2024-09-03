@@ -4,6 +4,7 @@ namespace Tv2regionerne\StatamicCuratedCollection\Tags;
 
 use Illuminate\Contracts\Pagination\Paginator;
 use Statamic\Data\DataCollection;
+use Statamic\Facades\Collection;
 use Statamic\Facades\Entry;
 use Statamic\Tags\Concerns\GetsQueryResults;
 use Statamic\Tags\Concerns\OutputsItems;
@@ -87,20 +88,23 @@ class StatamicCuratedCollection extends Tags
 
         if (! $results instanceof Paginator) {
             if ($this->params->get('fallback', false) && count($entries) < $limit) {
-                $fallbackEntries = Entry::query()
-                    ->where('collection', $curatedCollection->fallback_collection)
-                    ->whereStatus('published')
-                    ->whereNotIn('id', $ids ?? [])
-                    ->limit($limit - count($entries))
-                    ->orderBy($curatedCollection->fallback_sort_field, $curatedCollection->fallback_sort_direction)
-                    ->get()
-                    ->transform(function ($e) {
-                        $e->set('curated_collection_source', 'fallback');
+                $collection = Collection::findByHandle($curatedCollection->fallback_collection);
+                if ($collection) {
+                    $fallbackEntries = Entry::query()
+                        ->where('collection', $curatedCollection->fallback_collection)
+                        ->whereStatus('published')
+                        ->whereNotIn('id', $ids ?? [])
+                        ->limit($limit - count($entries))
+                        ->orderBy($curatedCollection->fallback_sort_field, $curatedCollection->fallback_sort_direction)
+                        ->get()
+                        ->transform(function ($e) {
+                            $e->set('curated_collection_source', 'fallback');
 
-                        return $e;
-                    });
+                            return $e;
+                        });
 
-                $entries = $entries->concat($fallbackEntries);
+                    $entries = $entries->concat($fallbackEntries);
+                }
             }
         }
 
