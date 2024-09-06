@@ -39,6 +39,15 @@
             :activeStatus="activeStatus"
             :key="activeStatus" />
 
+            <confirmation-modal
+                v-if="isDisconnected"
+                :cancellable="false"
+                :title="__('Websocket Disconnected')"
+                :buttonText="__('Reload')"
+                @confirm="reload">
+                {{ __('Websocket disconnected, please reload the page to resume live updates.') }}
+            </confirmation-modal>
+
     </div>
 </template>
 
@@ -65,14 +74,26 @@ export default {
     data() {
         return {
             activeStatus: 'published',
+            isConnected: false,
+            isDisconnected: false,
         }
     },
 
     mounted() {
         Statamic.$echo.booted(() => {
+
             this.$echo
                 .private(`curated-collections-private.${this.handle.toLowerCase()}`)
                 .listen('.CuratedCollections.CuratedCollectionUpdated', event => this.curatedCollectionPushed(event));
+
+            this.$echo.echo.connector.pusher.connection.bind('state_change', ({ current }) => {
+                if (current === 'connected' && !this.isConnected) {
+                    this.isConnected = true;
+                } else if (current !== 'connected' && this.isConnected) {
+                    this.isDisconnected = true;
+                }
+            });
+
         });
     },
 
@@ -80,6 +101,10 @@ export default {
 
         curatedCollectionPushed() {
             this.$refs.tab.request();
+        },
+
+        reload() {
+            window.location.reload();
         },
 
     },
