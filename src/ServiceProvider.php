@@ -71,9 +71,7 @@ class ServiceProvider extends AddonServiceProvider
 
     public function bootAddon()
     {
-        $this
-            ->bootPermissions()
-            ->bootCache();
+        $this->bootPermissions();
 
         Nav::extend(function ($nav) {
             $children = [];
