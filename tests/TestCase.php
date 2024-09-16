@@ -4,10 +4,6 @@ namespace Tv2regionerne\StatamicCuratedCollection\Tests;
 
 use Illuminate\Encryption\Encrypter;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Statamic\Extend\Manifest;
-use Statamic\Providers\StatamicServiceProvider;
-use Statamic\Stache\Stores\UsersStore;
-use Statamic\Statamic;
 use Statamic\Testing\AddonTestCase;
 use Statamic\Testing\Concerns\PreventsSavingStacheItemsToDisk;
 use Tv2regionerne\StatamicCuratedCollection\ServiceProvider;
@@ -43,7 +39,7 @@ abstract class TestCase extends AddonTestCase
         $app['config']->set('statamic.stache.stores.collections.directory', __DIR__.'/__fixtures__/content/collections');
         $app['config']->set('statamic.stache.stores.entries.directory', __DIR__.'/__fixtures__/content/collections');
 
-        $app['config']->set('curated-collections', require (__DIR__.'/../config/curated-collections.php'));
+        $app['config']->set('curated-collections', require(__DIR__.'/../config/curated-collections.php'));
 
         $app['config']->set('app.debug', true);
 
