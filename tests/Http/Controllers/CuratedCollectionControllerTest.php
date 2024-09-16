@@ -139,8 +139,8 @@ test('gets curated collection index page if the user can view a curated collecti
         ->assertSee([
             'curated-collection-listing',
         ])
-        ->assertSeeText('Test Curated')
-        ->assertDontSeeText('Test Curated Two');
+        ->assertSee('Test Curated')
+        ->assertDontSee('Test Curated Two');
 });
 
 test('gets curated collection show page if the user has view permission for that collection', function () {

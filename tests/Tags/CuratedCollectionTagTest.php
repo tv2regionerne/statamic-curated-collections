@@ -221,11 +221,11 @@ describe('curated collection tag tests', function () {
         $curated->fallback_collection = 'articles';
         $curated->save();
 
+        $entry2 = Facades\Entry::query()->where('title', 'Entry 2')->first();
+
         $result = tag('{{ curated_collection:test fallback="true" limit="1" deduplicate="true" }}{{ title }}{{ /curated_collection:test }}');
 
         $this->assertSame('Entry 2', $result);
-
-        $entry2 = Facades\Entry::query()->where('title', 'Entry 2')->first();
 
         $this->assertSame([$entry1->id(), $entry2->id()], app('deduplicate')->fetch());
     });
