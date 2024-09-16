@@ -28,9 +28,13 @@ class CuratedCollectionPolicy
     {
         $user = \Statamic\Facades\User::fromUser($user);
 
-        return ! CuratedCollection::all()->filter(function ($curatedCollection) use ($user) {
+        if ($user->hasPermission('view curated-collections')) {
+            return true;
+        }
+
+        return CuratedCollection::all()->first(function ($curatedCollection) use ($user) {
             return $this->view($user, $curatedCollection);
-        })->isEmpty();
+        }) ?? false;
     }
 
     /**
@@ -41,6 +45,10 @@ class CuratedCollectionPolicy
     public function view($user, CuratedCollection $curatedCollection)
     {
         $user = \Statamic\Facades\User::fromUser($user);
+
+        if ($user->hasPermission('view curated-collections')) {
+            return true;
+        }
 
         if ($user->hasPermission("view curated-collection {$curatedCollection->handle} entries")) {
             return true;
@@ -56,7 +64,11 @@ class CuratedCollectionPolicy
      */
     public function create($user)
     {
-        // handled by before()
+        if ($user->hasPermission('create curated-collections')) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -66,7 +78,15 @@ class CuratedCollectionPolicy
      */
     public function update($user, CuratedCollection $curatedCollection)
     {
-        // handled by before()
+        if ($user->hasPermission('edit curated-collections')) {
+            return true;
+        }
+
+        if ($user->hasPermission("edit curated-collection {$curatedCollection->handle}")) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -76,6 +96,14 @@ class CuratedCollectionPolicy
      */
     public function delete($user, CuratedCollection $curatedCollection)
     {
-        // handled by before()
+        if ($user->hasPermission('delete curated-collections')) {
+            return true;
+        }
+
+        if ($user->hasPermission("delete curated-collection {$curatedCollection->handle}")) {
+            return true;
+        }
+
+        return false;
     }
 }

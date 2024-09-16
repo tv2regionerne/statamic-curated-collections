@@ -90,7 +90,7 @@ class StatamicCuratedCollection extends Tags
             if ($this->params->get('fallback', false) && count($entries) < $limit) {
                 $collection = Collection::findByHandle($curatedCollection->fallback_collection);
                 if ($collection) {
-                    CuratedCollectionTagEvent::dispatch('collection:'. $collection->handle());
+                    CuratedCollectionTagEvent::dispatch('collection:'.$collection->handle());
                     $fallbackEntries = Entry::query()
                         ->where('collection', $curatedCollection->fallback_collection)
                         ->whereStatus('published')

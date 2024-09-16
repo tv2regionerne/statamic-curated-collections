@@ -3,7 +3,6 @@
 namespace Tv2regionerne\StatamicCuratedCollection;
 
 use Illuminate\Support\Facades\Broadcast;
-use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\View;
 use Statamic\Facades\CP\Nav;
@@ -93,16 +92,48 @@ class ServiceProvider extends AddonServiceProvider
 
     protected function bootPermissions(): self
     {
-        Permission::group('curated-collections', 'Curated Collections', function () {
+        Permission::group('curated-collections', 'All Curated Collections', function () {
             Permission::register('manage curated-collections', function ($permission) {
                 $permission
-                    ->label('Administrate Curated Collections')
+                    ->label('Administrate Curated Collections (all permissions)')
                     ->description('Grants access to administrate Curated Collections settings and blueprints');
             });
 
+            Permission::register('create curated-collections', function ($permission) {
+                $permission
+                    ->label('Create Curated Collections');
+            });
+
+            Permission::register('view curated-collections', function ($permission) {
+                $permission
+                    ->label('View Curated Collections');
+            });
+
+            Permission::register('edit curated-collections', function ($permission) {
+                $permission
+                    ->label('Edit Curated Collection');
+            });
+
+            Permission::register('delete curated-collections', function ($permission) {
+                $permission
+                    ->label('Delete Curated Collection');
+            });
+        });
+
+        Permission::group('curated-collections-individual', 'Individual Curated Collections', function () {
             // rescue to prevent issue when migrations has not been run
             rescue(function () {
                 CuratedCollection::all()->each(function ($collection) {
+                    Permission::register("edit curated-collection {$collection->handle}", function ($permission) use (&$collection) {
+                        $permission
+                            ->label("Edit {$collection->title}");
+                    });
+
+                    Permission::register("delete curated-collection {$collection->handle}", function ($permission) use (&$collection) {
+                        $permission
+                            ->label("Delete {$collection->title}");
+                    });
+
                     Permission::register("view curated-collection {$collection->handle} entries", function ($permission) use (&$collection) {
                         $permission
                             ->label("View {$collection->title} entries")
@@ -117,6 +148,7 @@ class ServiceProvider extends AddonServiceProvider
                                     ]),
                             ]);
                     });
+
                 });
             });
         });
