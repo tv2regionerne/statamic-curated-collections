@@ -52,13 +52,16 @@ class StatamicCuratedCollection extends Tags
             ->where('status', 'published')
             ->ordered();
 
-        if ($ids = $this->deduplicateApply()) {
-            $query->whereNotIn('entry_id', $ids);
-        }
-        if ($ids = $this->params->get('id:not_in')) {
+        $ids = $this->params->get('id:not_in', []);
+        if ($ids) {
             if (is_string($ids)) {
                 $ids = explode('|', $ids);
             }
+        }
+
+        $ids = array_merge($this->deduplicateApply(), $ids);
+
+        if (! empty($ids)) {
             $query->whereNotIn('entry_id', $ids);
         }
 
@@ -125,7 +128,7 @@ class StatamicCuratedCollection extends Tags
     protected function deduplicateApply()
     {
         if (! $this->params->get('deduplicate', false)) {
-            return;
+            return [];
         }
 
         return app('deduplicate')->fetch();
