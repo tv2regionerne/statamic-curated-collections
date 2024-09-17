@@ -76,7 +76,7 @@ class CuratedCollectionController extends CpController
     {
         abort_if(! $curatedCollection = CuratedCollection::query()->where('handle', $curatedCollection)->first(), 404);
 
-        $this->authorize('view', $curatedCollection, __('You are not authorized to view navs.'));
+        $this->authorize('view', $curatedCollection, __('You are not authorized to view this curated collection.'));
 
         if (! $curatedCollection->collections) {
             redirect(cp_route('curated-collections.edit', $curatedCollection->handle))
