@@ -45,22 +45,24 @@ class StatamicCuratedCollection extends Tags
 
         $limit = $this->params->get('limit', 10);
 
-        $entries = [];
-
         $query = CuratedCollectionEntry::query()
             ->where('curated_collection_id', $curatedCollection->id)
             ->where('status', 'published')
             ->ordered();
 
-        if ($ids = $this->deduplicateApply()) {
-            $query->whereNotIn('entry_id', $ids);
-        }
-        if ($ids = $this->params->get('id:not_in')) {
-            if (is_string($ids)) {
-                $ids = explode('|', $ids);
+        $ids = $this->deduplicateApply() ?? [];
+
+        if ($idNotIn = $this->params->get('id:not_in')) {
+            if (is_string($idNotIn)) {
+                $idNotIn = explode('|', $idNotIn);
             }
+            $ids = array_merge($ids, $idNotIn);
+        }
+
+        if ($ids) {
             $query->whereNotIn('entry_id', $ids);
         }
+
 
         $results = $this->results($query);
 
