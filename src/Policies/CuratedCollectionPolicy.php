@@ -64,6 +64,8 @@ class CuratedCollectionPolicy
      */
     public function create($user)
     {
+        $user = \Statamic\Facades\User::fromUser($user);
+
         if ($user->hasPermission('create curated-collections')) {
             return true;
         }
@@ -78,6 +80,8 @@ class CuratedCollectionPolicy
      */
     public function update($user, CuratedCollection $curatedCollection)
     {
+        $user = \Statamic\Facades\User::fromUser($user);
+
         if ($user->hasPermission('edit curated-collections')) {
             return true;
         }
@@ -96,6 +100,8 @@ class CuratedCollectionPolicy
      */
     public function delete($user, CuratedCollection $curatedCollection)
     {
+        $user = \Statamic\Facades\User::fromUser($user);
+
         if ($user->hasPermission('delete curated-collections')) {
             return true;
         }
