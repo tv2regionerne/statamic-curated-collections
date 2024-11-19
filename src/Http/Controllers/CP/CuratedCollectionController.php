@@ -211,6 +211,9 @@ class CuratedCollectionController extends CpController
                         'instructions' => __('statamic-curated-collections::configure.automation_expiration_time_instruction'),
                         'type' => 'integer',
                         'default' => 96,
+                        'if' => [
+                            'update_expiration_on_publish' => true,
+                        ],
                     ],
                 ],
             ],

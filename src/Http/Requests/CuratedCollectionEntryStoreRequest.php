@@ -48,7 +48,7 @@ class CuratedCollectionEntryStoreRequest extends FormRequest
                 'min:1',
             ],
             'expiration_time' => [
-                'sometimes',
+                'nullable',
                 'integer',
                 'min:1',
             ],

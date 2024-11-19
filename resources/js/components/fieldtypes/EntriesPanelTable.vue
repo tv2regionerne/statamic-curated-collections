@@ -28,7 +28,7 @@
                 </td>
                 <td class="whitespace-nowrap">
                     <template v-if="row.entry">
-                        {{ row.entry.status === 'published' ? $moment(row.entry.unpublish_at).format('lll') : '' }}
+                        {{ row.entry.status === 'published' && row.entry.unpublish_at ? $moment(row.entry.unpublish_at).format('lll') : __('Manually') }}
                     </template>
                 </td>
                 <td class="pt-0 pb-0">

@@ -76,7 +76,7 @@ class ApiEntriesController
                 $unpublishAt = now()->addHours($curatedCollection->expiration_time);
             }
 
-            if ($unpublishAt) {
+            if (isset($unpublishAt)) {
                 $curatedCollectionEntry->unpublishAt($unpublishAt);
             }
 

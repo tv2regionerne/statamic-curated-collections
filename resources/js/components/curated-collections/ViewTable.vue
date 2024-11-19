@@ -37,7 +37,7 @@
                     </div>    
                 </td>
                 <td data-show="published-listing" class="whitespace-nowrap pr-0">
-                    {{ row.status === 'published' ? $moment(row.unpublish_at).format('lll') : ' ' }}
+                    {{ row.status === 'published' && row.unpublish_at ? $moment(row.unpublish_at).format('lll') : __('Manually') }}
                 </td>
                 <td data-show="lookup" class="text-right">
                     <span class="rounded px-1 py-px text-2xs uppercase bg-gray-200 text-gray">
