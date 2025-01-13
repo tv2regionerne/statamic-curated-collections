@@ -30,7 +30,10 @@
                             <div class="relationship-index-field-item">
                                 <div class="flex items-center shrink">
                                     <div class="little-dot h-1 w-1 mr-1" :class="[row.entry[0].published ? 'bg-green-600' : 'bg-gray-400']" />
-                                    <a :href="row.entry[0].edit_url" :title="row.entry[0].title" v-text="row.entry[0].title" />
+                                    <a :href="row.entry[0].edit_url"
+                                        :title="row.entry[0].full_title || row.entry[0].title"
+                                        v-text="row.entry[0].full_title || row.entry[0].title"
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -40,8 +43,11 @@
                     {{ row.status === 'published' && row.unpublish_at ? $moment(row.unpublish_at).format('lll') : __('Manually') }}
                 </td>
                 <td data-show="lookup" class="text-right">
-                    <span class="rounded px-1 py-px text-2xs uppercase bg-gray-200 text-gray">
+                    <span class="rounded px-1 py-px text-2xs uppercase bg-gray-200 text-gray whitespace-nowrap">
                         {{ row.collection.title }}
+                        <template v-if="row.template_abbr">
+                            / {{ row.template_abbr }}
+                        </template>
                     </span>
                 </td>
                 <td data-show="listing" class="pt-0 pb-0">

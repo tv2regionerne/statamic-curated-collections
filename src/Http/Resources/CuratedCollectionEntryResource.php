@@ -23,7 +23,7 @@ class CuratedCollectionEntryResource extends JsonResource
             'collection' => $this->collection,
             'entry_id' => $this->entry_id,
             'entry' => [
-                (new Entry($entry))->toResponse($request)?->getData()?->data,
+                (new EntryResource($entry))->toResponse($request)?->getData()?->data,
             ],
             'site' => $this->site,
             'status' => $this->status,

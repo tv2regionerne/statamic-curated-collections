@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Tv2regionerne\StatamicCuratedCollection\Http\Controllers\CP\ApiEntriesController;
 use Tv2regionerne\StatamicCuratedCollection\Http\Controllers\CP\ApiEntryRelationController;
+use Tv2regionerne\StatamicCuratedCollection\Http\Controllers\CP\ApiLookupController;
 use Tv2regionerne\StatamicCuratedCollection\Http\Controllers\CP\CuratedCollectionBlueprintController;
 use Tv2regionerne\StatamicCuratedCollection\Http\Controllers\CP\CuratedCollectionController;
 
@@ -34,6 +35,7 @@ Route::prefix('/curated-collections')
                         Route::delete('/{curatedCollectionEntry}', [ApiEntriesController::class, 'destroy'])->name('entries.destroy');
                     });
 
+                Route::get('/lookup', [ApiLookupController::class, 'index'])->name('lookup');
                 Route::get('/entry-relations/{id}', [ApiEntryRelationController::class, 'index'])->name('entry-relation');
 
             });
