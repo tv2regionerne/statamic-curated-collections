@@ -135,7 +135,7 @@ export default {
         },
 
         requestUrl() {
-            return cp_url('fieldtypes/relationship') + '?' + qs.stringify({
+            return cp_url('curated-collections/api/lookup') + '?' + qs.stringify({
                 config: this.configParameter,
                 collections: this.collections,
                 exclusions: this.exclusions,
@@ -158,6 +158,7 @@ export default {
                 unpublish_at: null,
                 collection: item.collection,
                 published: item.status === 'published',
+                template_abbr: item.template_abbr,
             }));
         },
 
