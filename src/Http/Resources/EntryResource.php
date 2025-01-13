@@ -36,6 +36,7 @@ class EntryResource extends JsonResource
         $abbr = $words->count() > 1
             ? $words->slice(0, 2)->map(fn ($word) => Str::substr($word, 0, 1))->join('')
             : Str::substr($words->first(), 0, 2);
+
         return Str::upper($abbr);
     }
 }
