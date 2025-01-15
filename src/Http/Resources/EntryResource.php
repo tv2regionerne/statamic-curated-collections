@@ -32,7 +32,7 @@ class EntryResource extends JsonResource
         if (! $entry->template) {
             return null;
         }
-        $words = Str::of($entry->template)->afterLast('/')->explode('_');
+        $words = Str::of($entry->template)->afterLast('/')->split('/[\s_-]/');
         $abbr = $words->count() > 1
             ? $words->slice(0, 2)->map(fn ($word) => Str::substr($word, 0, 1))->join('')
             : Str::substr($words->first(), 0, 2);
