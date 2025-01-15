@@ -21,5 +21,4 @@ class ApiLookupController extends RelationshipFieldtypeController
         return EntryResource::collection($items)
             ->additional($fieldtype->getResourceCollection($request, $items)->additional);
     }
-
 }
