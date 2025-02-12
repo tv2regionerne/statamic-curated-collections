@@ -5,7 +5,6 @@ namespace Tv2regionerne\StatamicCuratedCollection\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use Statamic\Http\Controllers\API\ApiController;
 use Tv2regionerne\StatamicCuratedCollection\Http\Controllers\CP\ApiEntriesController as CpController;
-use Tv2regionerne\StatamicCuratedCollection\Http\Requests\CuratedCollectionEntryEditRequest;
 use Tv2regionerne\StatamicCuratedCollection\Http\Requests\CuratedCollectionEntryIndexRequest;
 use Tv2regionerne\StatamicCuratedCollection\Http\Requests\CuratedCollectionEntryReorderRequest;
 use Tv2regionerne\StatamicCuratedCollection\Http\Requests\CuratedCollectionEntryStoreRequest;
@@ -36,33 +35,24 @@ class CuratedCollectionEntriesController extends ApiController
         return (new CpController($request))->reorder($request, $curatedCollection);
     }
 
-    public function show(CuratedCollectionEntryEditRequest $request, $collection, $id)
-    {
-        $curatedCollection = CuratedCollection::findByHandle($collection);
-
-        $this->abortIfInvalid($curatedCollection);
-
-        return (new CpController($request))->show($request, $curatedCollection, $id);
-    }
-
-    public function store(CuratedCollectionEntryStoreRequest $request)
+    public function store(CuratedCollectionEntryStoreRequest $request, $id)
     {
         $curatedCollection = CuratedCollection::findByHandle($id);
 
         $this->abortIfInvalid($curatedCollection);
 
-        return (new CpController($request))->store($request, $collection);
+        return (new CpController($request))->store($request, $curatedCollection);
     }
 
-    public function update(CuratedCollectionEntryUpdateRequest $request, $collection, $id)
+    public function update(CuratedCollectionEntryUpdateRequest $request, $id, $entry)
     {
-        $curatedCollection = CuratedCollection::findByHandle($collection);
+        $curatedCollection = CuratedCollection::findByHandle($id);
 
         $this->abortIfInvalid($curatedCollection);
 
         $blueprint = $curatedCollection->addEntryBlueprint();
 
-        $curatedCollectionEntry = CuratedCollectionEntry::find($id);
+        $curatedCollectionEntry = CuratedCollectionEntry::find($entry);
 
         $this->abortIfInvalid($curatedCollectionEntry);
 
@@ -71,16 +61,18 @@ class CuratedCollectionEntriesController extends ApiController
 
         $request->merge($mergedData->all());
 
-        return (new CpController($request))->update($request, $curatedCollection, $id);
+        return (new CpController($request))->update($request, $curatedCollection, $curatedCollectionEntry);
     }
 
-    public function destroy(Request $request, $collection, $id)
+    public function destroy(Request $request, $id, $entry)
     {
-        $curatedCollection = CuratedCollection::findByHandle($collection);
+        $curatedCollection = CuratedCollection::findByHandle($id);
 
         $this->abortIfInvalid($curatedCollection);
 
-        return (new CpController($request))->destroy($request, $collection, $id);
+        $curatedCollectionEntry = CuratedCollectionEntry::find($entry);
+
+        return (new CpController($request))->destroy($request, $curatedCollection, $curatedCollectionEntry);
     }
 
     private function abortIfInvalid($handler)

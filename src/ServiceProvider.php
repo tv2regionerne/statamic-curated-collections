@@ -174,7 +174,13 @@ class ServiceProvider extends AddonServiceProvider
                                 Route::prefix('/entries')
                                     ->group(function () {
                                         Route::get('/', [CuratedCollectionEntriesController::class, 'index']);
+                                        Route::post('/', [CuratedCollectionEntriesController::class, 'store']);
                                         Route::post('reorder', [CuratedCollectionEntriesController::class, 'reorder']);
+                                        Route::prefix('/{entry}')
+                                            ->group(function () {
+                                                Route::patch('/', [CuratedCollectionEntriesController::class, 'update']);
+                                                Route::delete('/', [CuratedCollectionEntriesController::class, 'destroy']);
+                                            });
                                     });
                             });
                     });
