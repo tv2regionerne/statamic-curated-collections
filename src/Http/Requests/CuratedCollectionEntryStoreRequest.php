@@ -5,6 +5,7 @@ namespace Tv2regionerne\StatamicCuratedCollection\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Statamic\Facades\Entry;
+use Tv2regionerne\StatamicCuratedCollection\Models\CuratedCollection;
 
 class CuratedCollectionEntryStoreRequest extends FormRequest
 {
@@ -14,6 +15,17 @@ class CuratedCollectionEntryStoreRequest extends FormRequest
     public function authorize(): bool
     {
         return true;
+    }
+
+    /**
+     * The validation depends on the curated collection object, but for Private API
+     * requests this is not bound to the route automatically, so we need to fetch it.
+     */
+    protected function prepareForValidation(): void
+    {
+        if (! $this->curatedCollection && $this->id) {
+            $this->curatedCollection = CuratedCollection::findByHandle($this->id);
+        }
     }
 
     /**
