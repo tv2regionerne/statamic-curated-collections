@@ -17,6 +17,9 @@ class CuratedCollectionEntryEditResource extends JsonResource
 
     public function toArray($request)
     {
+        $entry = $this->resource->entry();
+        $entry_published = $entry->published && (! $entry->published_date || $entry->published_date->isPast());
+
         $data = json_decode(json_encode($this->data), true) ?? [];
         $values = array_merge($data, [
             'id' => $this->id,
@@ -25,6 +28,7 @@ class CuratedCollectionEntryEditResource extends JsonResource
             'collection' => $this->collection,
             'order' => $this->order_column,
             'unpublish_at' => $this->unpublish_at,
+            'entry_published' => $entry_published,
         ]);
 
         $fields = $this->blueprint

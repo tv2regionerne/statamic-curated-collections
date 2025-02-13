@@ -77,8 +77,12 @@ class CuratedCollection extends Model
             $blueprint->ensureField('published', [
                 'visibility' => 'hidden',
                 'type' => 'toggle',
-                'display' => __('Published'),
-                //'instructions' => __(''),
+                'width' => 50,
+            ], null, true);
+
+            $blueprint->ensureField('entry_published', [
+                'visibility' => 'hidden',
+                'type' => 'toggle',
                 'width' => 50,
             ], null, true);
 
@@ -88,7 +92,7 @@ class CuratedCollection extends Model
                 'instructions' => __('Overskriv standard indstillingerne for Antal timer for hvornår denne entry skal fjernes fra listen. Datoen for fjernelse sættes automatisk ved publisering.'),
                 'width' => 50,
                 'if' => [
-                    'published' => false,
+                    'entry_published' => false,
                 ],
             ], null, true);
 
@@ -98,7 +102,7 @@ class CuratedCollection extends Model
                 'instructions' => __('Tilføjes i bunden hvis der ikke sættes en position'),
                 'width' => 50,
                 'if' => [
-                    'published' => true,
+                    'entry_published' => true,
                 ],
             ], null, true);
 
@@ -108,7 +112,7 @@ class CuratedCollection extends Model
                 'instructions' => __('Tilføjes i bunden hvis der ikke sættes en position'),
                 'width' => 50,
                 'if' => [
-                    'published' => false,
+                    'entry_published' => false,
                 ],
             ], null, true);
 
