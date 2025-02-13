@@ -76,6 +76,15 @@ class CuratedCollectionEntriesController extends ApiController
         return (new CpController($request))->destroy($request, $curatedCollection, $curatedCollectionEntry);
     }
 
+    public function destroyAll(Request $request, $id)
+    {
+        $curatedCollection = CuratedCollection::findByHandle($id);
+
+        $this->abortIfInvalid($curatedCollection);
+
+        return (new CpController($request))->destroyAll($request, $curatedCollection);
+    }
+
     private function abortIfInvalid($handler)
     {
         if (! $handler) {

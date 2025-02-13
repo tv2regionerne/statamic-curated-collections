@@ -184,4 +184,13 @@ class ApiEntriesController
 
         return response()->json(['success' => true]);
     }
+
+    public function destroyAll(Request $request, CuratedCollection $curatedCollection)
+    {
+        $curatedCollection->entries->each->delete();
+
+        CuratedCollectionUpdatedEvent::dispatch($curatedCollection->handle);
+
+        return response()->json(['success' => true]);
+    }
 }
