@@ -170,7 +170,7 @@ class ApiEntriesController
         if ($data['unpublish_at']) {
             $curatedCollectionEntry->unpublishAt($data['unpublish_at']);
         }
-        
+
         if ($data['priority_date']) {
             $curatedCollectionEntry->priorityDate($data['priority_date']);
         }

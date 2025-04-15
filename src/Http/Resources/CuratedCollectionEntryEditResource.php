@@ -22,7 +22,7 @@ class CuratedCollectionEntryEditResource extends JsonResource
 
         if ($this->resource->priority_date) {
             $date = Carbon::parse($this->resource->priority_date);
-        } else if ($entry->published_date) {
+        } elseif ($entry->published_date) {
             $date = $entry->published_date;
         } else {
             $date = $entry->date;

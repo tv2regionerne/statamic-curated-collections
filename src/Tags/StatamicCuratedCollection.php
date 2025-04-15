@@ -52,7 +52,7 @@ class StatamicCuratedCollection extends Tags
             ->where('status', 'published')
             ->where(function ($query) {
                 $query->whereDate('priority_date', '<=', now())
-                      ->orWhereNull('priority_date');
+                    ->orWhereNull('priority_date');
             })
             ->ordered();
 
