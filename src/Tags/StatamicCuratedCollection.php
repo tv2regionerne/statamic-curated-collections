@@ -51,7 +51,7 @@ class StatamicCuratedCollection extends Tags
             ->where('curated_collection_id', $curatedCollection->id)
             ->where('status', 'published')
             ->where(function ($query) {
-                $query->whereDate('priority_date', '<=', now())
+                $query->whereDate('priority_date', '<', now())
                     ->orWhereNull('priority_date');
             })
             ->ordered();
