@@ -7,7 +7,7 @@ return [
     'blueprint_instructions' => 'Edit the blueprint to control the fields available for each curated entry.',
     'collections_instructions' => 'You must select at least one collection to curate.',
     'display_form' => 'Force the form to be displayed when adding entries. Any required field in the blueprint will enforce the form to show.',
-    'max_entries_instructions' => 'The maximum number of entries that can be added to this curated collection.',
+    'max_items' => 'The maximum number of entries that can be added to this curated collection.',
     'fallback_collection_instructions' => 'You must select at least one collection to curate.',
     'fallback_sort_field' => 'The field to sort by in the fallback collection.',
     'automation_instructions' => 'Enable automation for publishing and unpublishing entries in the curated collection.',

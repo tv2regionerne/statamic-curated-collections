@@ -21,6 +21,7 @@ class CuratedCollection extends Model
         'site',
         'collections',
         'display_form',
+        'max_items',
         'fallback_collection',
         'fallback_sort_field',
         'fallback_sort_direction',
