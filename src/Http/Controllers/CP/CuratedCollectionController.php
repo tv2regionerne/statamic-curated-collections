@@ -190,7 +190,7 @@ class CuratedCollectionController extends CpController
                         'default' => true,
                     ],
                     'max_items' => [
-                        'display' => __('Max items'),
+                        'display' => __('Max entries'),
                         'instructions' => __('statamic-curated-collections::configure.max_items'),
                         'type' => 'integer',
                         'default' => 100,
