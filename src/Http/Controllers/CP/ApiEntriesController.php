@@ -62,7 +62,7 @@ class ApiEntriesController
         $curatedCollectionEntry = CuratedCollectionEntry::make();
         $curatedCollectionEntry->curatedCollection()->associate($curatedCollection);
         $curatedCollectionEntry->entry($entry);
-        $curatedCollectionEntry->data(collect($data)->except(['curated_collection', 'entry', 'order', 'unpublish_at']));
+        $curatedCollectionEntry->data(collect($data)->except(['curated_collection', 'entry', 'order', 'unpublish_at', 'priority_date']));
         $curatedCollectionEntry->collection($entry->collection());
 
         if ($entry->status() === 'published') {
@@ -78,6 +78,10 @@ class ApiEntriesController
 
             if (isset($unpublishAt)) {
                 $curatedCollectionEntry->unpublishAt($unpublishAt);
+            }
+
+            if ($data['priority_date']) {
+                $curatedCollectionEntry->priorityDate($data['priority_date']);
             }
 
             $curatedCollectionEntry->status('published');
@@ -146,7 +150,7 @@ class ApiEntriesController
         $fields->validate();
         $data = $fields->process()->values()->all();
 
-        $curatedCollectionEntry->data(collect($data)->except(['curated_collection', 'entry', 'order', 'unpublish_at']));
+        $curatedCollectionEntry->data(collect($data)->except(['curated_collection', 'entry', 'order', 'unpublish_at', 'priority_date']));
 
         if ($entry->status() === 'published') {
 
@@ -165,6 +169,10 @@ class ApiEntriesController
         // set the unpublish time absolute
         if ($data['unpublish_at']) {
             $curatedCollectionEntry->unpublishAt($data['unpublish_at']);
+        }
+        
+        if ($data['priority_date']) {
+            $curatedCollectionEntry->priorityDate($data['priority_date']);
         }
 
         $curatedCollectionEntry->save();
