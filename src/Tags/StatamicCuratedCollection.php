@@ -52,7 +52,7 @@ class StatamicCuratedCollection extends Tags
             ->where('status', 'published')
             ->ordered();
 
-        $ids = $this->params->get('id:not_in', []);
+        $ids = $this->params->all()['id:not_in'] ?? [];
         if ($ids) {
             if (is_string($ids)) {
                 $ids = explode('|', $ids);
