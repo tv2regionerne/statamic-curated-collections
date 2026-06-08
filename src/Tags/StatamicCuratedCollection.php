@@ -38,7 +38,8 @@ class StatamicCuratedCollection extends Tags
      */
     public function wildcard($tag)
     {
-        $curatedCollection = CuratedCollection::where('handle', $tag)->first();
+        $curatedCollection = CuratedCollection::findByHandle($tag);
+
         if (! $curatedCollection) {
             return null;
         }

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Spatie\EloquentSortable\SortableTrait;
+use Statamic\Facades\Blink;
 use Statamic\Facades\Entry;
 
 class CuratedCollectionEntry extends Model
@@ -89,7 +90,10 @@ class CuratedCollectionEntry extends Model
      */
     public function processedData()
     {
-        $blueprint = $this->curatedCollection->blueprint();
+        $blueprint = Blink::once(
+            'curated-collection-entry-blueprint-'.$this->curated_collection_id,
+            fn () => $this->curatedCollection->blueprint(),
+        );
 
         return $blueprint->fields()->addValues(json_decode(json_encode($this->data ?? []), true))->augment()->values();
     }
