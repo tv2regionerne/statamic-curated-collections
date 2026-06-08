@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Statamic\Events\NavBlueprintFound;
+use Statamic\Facades\Blink;
 use Statamic\Facades\Blueprint;
 
 class CuratedCollection extends Model
@@ -145,7 +146,9 @@ class CuratedCollection extends Model
 
     public static function findByHandle($handle): CuratedCollection|Model|null
     {
-        return self::query()->where('handle', $handle)->first();
+        return Blink::once('curated-collection-handle-'.$handle, function () use ($handle) {
+            return self::query()->where('handle', $handle)->first();
+        });
     }
 
     public function reorderEntries()
