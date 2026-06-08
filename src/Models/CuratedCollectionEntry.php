@@ -91,8 +91,8 @@ class CuratedCollectionEntry extends Model
     public function processedData()
     {
         $blueprint = Blink::once(
-            'curated-collection-entry-blueprint-' . $this->curated_collection_id,
-            fn() => $this->curatedCollection->blueprint(),
+            'curated-collection-entry-blueprint-'.$this->curated_collection_id,
+            fn () => $this->curatedCollection->blueprint(),
         );
 
         return $blueprint->fields()->addValues(json_decode(json_encode($this->data ?? []), true))->augment()->values();
