@@ -107,6 +107,17 @@ class ApiEntriesController
             $curatedCollectionEntry->setPosition($request->input('order'));
         }
 
+        // Remove entries if we exceed max items
+        if ($curatedCollection->max_items && $curatedCollection->entries()->count() > $curatedCollection->max_items) {
+            CuratedCollectionEntry::query()
+                ->where('curated_collection_id', $curatedCollection->id)
+                ->ordered()
+                ->get()
+                ->skip($curatedCollection->max_items)
+                ->each
+                ->delete();
+        }
+
         return new CuratedCollectionEntryResource($curatedCollectionEntry);
     }
 
