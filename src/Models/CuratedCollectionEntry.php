@@ -32,6 +32,7 @@ class CuratedCollectionEntry extends Model
         'expiration_time',
         'status',
         'unpublish_at',
+        'priority_date',
     ];
 
     protected $casts = [
@@ -114,6 +115,22 @@ class CuratedCollectionEntry extends Model
             return $this->expiration_time;
         }
         $this->expiration_time = $expirationTime;
+
+        return $this;
+    }
+
+    public function priorityDate($priorityDate = null)
+    {
+        if (! $priorityDate) {
+            return $this->priority_date;
+        }
+        // Handle the statamic date/time array
+        if (is_array($priorityDate)) {
+            $this->priority_date = Carbon::make($priorityDate['date'].' '.$priorityDate['time']);
+
+            return $this;
+        }
+        $this->priority_date = $priorityDate;
 
         return $this;
     }

@@ -31,6 +31,7 @@ class CuratedCollectionEntryResource extends JsonResource
             'expiration_time' => $this->expiration_time,
             'data' => $this->data,
             'unpublish_at' => $this->unpublish_at,
+            'priority_date' => $this->priority_date,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

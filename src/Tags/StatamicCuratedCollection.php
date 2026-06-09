@@ -51,6 +51,10 @@ class StatamicCuratedCollection extends Tags
         $query = CuratedCollectionEntry::query()
             ->where('curated_collection_id', $curatedCollection->id)
             ->where('status', 'published')
+            ->where(function ($query) {
+                $query->whereDate('priority_date', '<', now())
+                    ->orWhereNull('priority_date');
+            })
             ->ordered();
 
         $ids = $this->params->all()['id:not_in'] ?? [];

@@ -63,18 +63,6 @@ class CuratedCollection extends Model
                 'type' => 'collections',
             ], null, true);
 
-            $blueprint->ensureField('unpublish_at', [
-                'type' => 'date',
-                'display' => __('Fjern fra listen den'),
-                'instructions' => __('Indlægget fjernes automatisk fra listen på denne dato'),
-                'time_enabled' => true,
-                'format' => 'c',
-                'width' => 50,
-                'validate' => [
-                    'nullable',
-                ],
-            ], null, true);
-
             $blueprint->ensureField('published', [
                 'visibility' => 'hidden',
                 'type' => 'toggle',
@@ -85,6 +73,33 @@ class CuratedCollection extends Model
                 'visibility' => 'hidden',
                 'type' => 'toggle',
                 'width' => 50,
+            ], null, true);
+
+            $blueprint->ensureField('priority_date', [
+                'type' => 'date',
+                'display' => __('Priority date'),
+                'instructions' => __('Priority date for this entry'),
+                'time_enabled' => true,
+                'format' => 'c',
+                'width' => 50,
+                'if' => [
+                    'entry_published' => true,
+                ],
+                'validate' => [
+                    'nullable',
+                ],
+            ], null, true);
+
+            $blueprint->ensureField('unpublish_at', [
+                'type' => 'date',
+                'display' => __('Fjern fra listen den'),
+                'instructions' => __('Indlægget fjernes automatisk fra listen på denne dato'),
+                'time_enabled' => true,
+                'format' => 'c',
+                'width' => 50,
+                'validate' => [
+                    'nullable',
+                ],
             ], null, true);
 
             $blueprint->ensureField('expiration_time', [
